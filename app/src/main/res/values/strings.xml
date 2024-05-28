@@ -1,3 +1,54 @@
 <resources>
     <string name="app_name">Alarm 15</string>
+
+    <!-- TODO: Delete all which start with dummy_ and find their usages and delete them too  -->
+    <!-- Labels (Bottom NavBar) -->
+    <string name="label_clock">Clock</string>
+    <string name="label_alarm">Alarm</string>
+    <string name="label_location">Location</string>
+    <string name="label_timer">Timer</string>
+    <string name="label_stopwatch">Stopwatch</string>
+
+    <!-- Labels (3-dot menu) -->
+    <string name="label_settings">Settings</string>
+    <string name="label_help">Help</string>
+
+    <!-- Labels (Top of each fragment)  -->
+    <string name="clock_fragment">Clock fragment</string>
+    <string name="alarm_fragment">Alarms</string>
+    <string name="timer_fragment">Timer</string>
+    <string name="stopwatch_fragment">Stopwatch</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Labels (Add Alarm dialog)   -->
+    <string name="label_add_alarm">Add Alarm</string>
+    <string name="label_add_alarm_save">Save</string>
+    <string name="label_add_alarm_discard">Discard</string>
+    <string name="label_add_alarm_sound">Alarm sound</string>
+    <string name="label_add_alarm_vibrate">Vibration</string>
+    <string name="label_add_alarm_snooze">Snooze</string>
+    <string name="label_add_alarm_name">Alarm name</string>
+    <string name="label_monday">M</string>
+    <string name="label_tuesday">T</string>
+    <string name="label_wednesday">W</string>
+    <string name="label_thursday">T</string>
+    <string name="label_friday">F</string>
+    <string name="label_saturday">S</string>
+    <string name="label_sunday">S</string>
+    <string name="dummy_add_alarm_text">Tomorrow-Sat,27 Apr</string>
+
+    <!-- Accessibility hints (Content Descriptions)   -->
+    <string name="hint_add_alarm">Add Alarm</string>
+    <string name="hint_add_clock_alarm">Add clock alarm</string>
+    <string name="hint_add_location_alarm">Add location alarm</string>
+    <string name="dummy_delete_pref">Delete pref</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Welcome Screen strings   -->
+    <string name="welcome_title">Welcome</string>
+    <string name="welcome_message">Hi, This app was developed by Malindu.\nSome permissions are needed for functionality of this app.</string>
+    <string name="welcome_button_permissions">Review Permissions</string>
+    <string name="welcome_button_cancel">Quit</string>
 </resources>
