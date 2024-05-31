@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/clockFragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_clock_selector"
+        android:title="@string/label_clock"/>
+    <item
+        android:id="@+id/alarmFragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_alarm_selector"
+        android:title="@string/label_alarm"/>
+    <item
+        android:id="@+id/locationFragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_location_selector"
+        android:title="@string/label_location"/>
+    <item
+        android:id="@+id/timerFragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_timer_selector"
+        android:title="@string/label_timer"/>
+    <item
+        android:id="@+id/stopwatchFragment"
+        android:enabled="true"
+        android:icon="@drawable/icon_stopwatch_selector"
+        android:title="@string/label_stopwatch"/>
+</menu>

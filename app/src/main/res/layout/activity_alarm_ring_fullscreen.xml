@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/holo_red_dark"
+    android:padding="16dp"
+    android:id="@+id/fullscreenmain">
+
+    <TextView
+        android:id="@+id/alarmMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alarm! Wake up!"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <Button
+        android:id="@+id/dismissButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dismiss"
+        android:layout_below="@id/alarmMessage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+</RelativeLayout>

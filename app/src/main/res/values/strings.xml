@@ -15,7 +15,7 @@
 
     <!-- Labels (Top of each fragment)  -->
     <string name="clock_fragment">Clock fragment</string>
-    <string name="alarm_fragment">Alarms</string>
+    <string name="alarm_fragment">Alarm</string>
     <string name="timer_fragment">Timer</string>
     <string name="stopwatch_fragment">Stopwatch</string>
     <string name="title_activity_settings">SettingsActivity</string>
