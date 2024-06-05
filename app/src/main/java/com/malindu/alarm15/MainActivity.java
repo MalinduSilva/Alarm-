@@ -27,11 +27,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
-import com.malindu.alarm15.alarm.AlarmFragment;
-import com.malindu.alarm15.clock.ClockFragment;
-import com.malindu.alarm15.location.LocationFragment;
-import com.malindu.alarm15.stopwatch.StopwatchFragment;
-import com.malindu.alarm15.timer.TimerFragment;
+import com.malindu.alarm15.ui.AlarmFragment;
+import com.malindu.alarm15.ui.ClockFragment;
+import com.malindu.alarm15.ui.LocationFragment;
+import com.malindu.alarm15.ui.StopwatchFragment;
+import com.malindu.alarm15.ui.TimerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
