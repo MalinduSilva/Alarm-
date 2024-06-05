@@ -1,8 +1,7 @@
-package com.malindu.alarm15.alarm;
+package com.malindu.alarm15.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.malindu.alarm15.R;
+import com.malindu.alarm15.adapters.AlarmRecyclerViewAdapter;
+import com.malindu.alarm15.models.Alarm;
 
 public class AlarmFragment extends Fragment implements AlarmAddNewClockDialog.OnAlarmAddedListener, AlarmRecyclerViewAdapter.OnAlarmClickListener {
 

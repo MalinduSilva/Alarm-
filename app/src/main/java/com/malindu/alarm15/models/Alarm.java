@@ -1,4 +1,4 @@
-package com.malindu.alarm15.alarm;
+package com.malindu.alarm15.models;
 
 import android.content.Context;
 import android.text.format.DateFormat;

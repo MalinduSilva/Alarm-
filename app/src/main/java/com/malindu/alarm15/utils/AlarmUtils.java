@@ -1,4 +1,4 @@
-package com.malindu.alarm15.alarm;
+package com.malindu.alarm15.utils;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
+
+import com.malindu.alarm15.models.Alarm;
 
 public class AlarmUtils {
     private static final String TAG = "AlarmUtils";

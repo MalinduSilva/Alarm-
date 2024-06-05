@@ -1,4 +1,4 @@
-package com.malindu.alarm15.location;
+package com.malindu.alarm15.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,8 +21,7 @@ public class LocationAddNewDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.dialog_add_location_alarm, container, false);
-        SupportMapFragment mapFragment
-                = (SupportMapFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.mapView);
+        SupportMapFragment mapFragment = (SupportMapFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.mapView);
 
         return view;
     }

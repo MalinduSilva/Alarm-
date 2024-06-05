@@ -1,4 +1,4 @@
-package com.malindu.alarm15.alarm;
+package com.malindu.alarm15.utils;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.malindu.alarm15.R;
+import com.malindu.alarm15.ui.AlarmRingFullscreenActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";

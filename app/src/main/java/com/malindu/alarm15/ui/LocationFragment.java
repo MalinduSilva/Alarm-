@@ -1,4 +1,4 @@
-package com.malindu.alarm15.location;
+package com.malindu.alarm15.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
