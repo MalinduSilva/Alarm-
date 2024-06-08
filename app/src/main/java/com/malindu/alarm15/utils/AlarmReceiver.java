@@ -12,20 +12,20 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.malindu.alarm15.R;
+import com.malindu.alarm15.models.Alarm;
 import com.malindu.alarm15.ui.AlarmRingFullscreenActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
-    private static final String CHANNEL_ID = "alarm_channel";
-    private static final int NOTIFICATION_ID = 1;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: This method is called when the BroadcastReceiver is receiving
-        // an Intent broadcast.
+        // TODO: This method is called when the BroadcastReceiver is receiving an Intent broadcast.
         //throw new UnsupportedOperationException("Not yet implemented");
 
-        Log.d(TAG, "onReceive: ");
+        Log.d(TAG, "onReceive: " + intent.getStringExtra("AlarmStr"));
+        Alarm alarm = new Alarm();
+        alarm = Alarm.getAlarmObj(intent.getStringExtra("AlarmStr"));
         Intent fullscreenIntent = new Intent(context, AlarmRingFullscreenActivity.class);
         fullscreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent fullscreenPendingIntent = PendingIntent.getActivity(context, 0, fullscreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -34,21 +34,22 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
+                    Constants.CHANNEL_ID_ALARM,
                     "Alarm Notifications",
                     NotificationManager.IMPORTANCE_HIGH);
+            channel.setBypassDnd(true);
             notificationManager.createNotificationChannel(channel);
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon_alarm_outlined) // Make sure to have an alarm icon in drawable
-                .setContentTitle("Alarm")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.CHANNEL_ID_ALARM)
+                .setSmallIcon(R.drawable.icon_alarm_outlined)
+                .setContentTitle(alarm.getAlarmLabel())
                 .setContentText("Wake up! Your alarm is ringing.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(fullscreenPendingIntent, true)
                 .setAutoCancel(true);
 
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+        notificationManager.notify(Constants.NOTIFICATION_ID, builder.build());
     }
 }

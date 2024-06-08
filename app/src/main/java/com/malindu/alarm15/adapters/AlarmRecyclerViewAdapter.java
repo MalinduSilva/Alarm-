@@ -17,6 +17,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.malindu.alarm15.R;
 import com.malindu.alarm15.utils.AlarmUtils;
 import com.malindu.alarm15.models.Alarm;
+import com.malindu.alarm15.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,9 +29,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     private Map<String, ?> allAlarms;
     private ArrayList<Alarm> alarmList;
     private Context context;
-    private static final String ALARM_PREFERENCES_FILE = "ALARM_PREFERENCES_FILE";
-    private static final String ALARM_KEY  = "ALARM_";
-    private static final String ALARM_COUNT_KEY  = "ALARM_COUNT";
     public interface OnAlarmClickListener { void onAlarmClick(Alarm alarm); }
     private OnAlarmClickListener alarmClickListener;
     public void setOnAlarmClickListener(OnAlarmClickListener listener) { this.alarmClickListener = listener; }
@@ -42,14 +40,14 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
     }
     private void loadAlarms() {
-        SharedPreferences sp = context.getSharedPreferences(ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
         allAlarms = sp.getAll();
         alarmList.clear();
         for (Map.Entry<String, ?> entry : allAlarms.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             //Log.d(TAG, "AlarmList { key: " + key + ", value: " + value.toString() + "}");
-            if (!key.equals(ALARM_COUNT_KEY)) {
+            if (!key.equals(Constants.ALARM_COUNT_KEY)) {
                 Alarm alarm = Alarm.getAlarmObj(value.toString());
                 alarmList.add(alarm);
             }

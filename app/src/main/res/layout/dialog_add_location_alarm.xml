@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AlarmAddNewClockDialog">
+    tools:context=".ui.LocationAddNewDialog">
 
     <TextView
         android:id="@+id/label_add_alarm"
@@ -14,8 +14,9 @@
         android:textSize="40sp"
         android:layout_marginHorizontal="10dp"/>
 
-    <com.google.android.gms.maps.MapView
+    <fragment
         android:id="@+id/mapView"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_below="@id/label_add_alarm"
         android:layout_marginHorizontal="5dp"
         android:layout_width="match_parent"

@@ -14,16 +14,14 @@ public class AlarmUtils {
     private static final String TAG = "AlarmUtils";
     private Alarm newAlarm = new Alarm();
     private static int alarmNo = 0;
-    private static final String ALARM_PREFERENCES_FILE = "ALARM_PREFERENCES_FILE";
-    private static final String ALARM_KEY  = "ALARM_";
-    private static final String ALARM_COUNT_KEY  = "ALARM_COUNT";
 
     public static void setAlarm(Context context, Alarm alarm) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
-        alarmNo = sharedPreferences.getInt(ALARM_COUNT_KEY, 0);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        alarmNo = sharedPreferences.getInt(Constants.ALARM_COUNT_KEY, 0);
         alarmNo++;
         //alarm.setAlarmID(ALARM_KEY + alarmNo);
         Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("AlarmStr", alarm.getStringObj());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmNo, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
@@ -42,19 +40,19 @@ public class AlarmUtils {
     }
 
     private static void saveAlarm(Context context, Alarm alarm) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
-        alarmNo = sharedPreferences.getInt(ALARM_COUNT_KEY, 0);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        alarmNo = sharedPreferences.getInt(Constants.ALARM_COUNT_KEY, 0);
         alarmNo++;
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if (alarm.getAlarmID().isEmpty()) { // means this alarm is new
-            alarm.setAlarmID(ALARM_KEY + alarmNo);
+            alarm.setAlarmID(Constants.ALARM_KEY + alarmNo);
             editor.putString(alarm.getAlarmID(), alarm.getStringObj());
-            editor.putInt(ALARM_COUNT_KEY, alarmNo);
+            editor.putInt(Constants.ALARM_COUNT_KEY, alarmNo);
             Log.d(TAG, "New alarmNo: " + alarmNo + " - AlarmID: " + alarm.getAlarmID());
         } else {
             editor.putString(alarm.getAlarmID(), alarm.getStringObj());
-            Log.d(TAG, "Existing alarmNo: " + alarm.getAlarmID().substring(ALARM_KEY.length()) + " - AlarmID: " + alarm.getAlarmID());
+            Log.d(TAG, "Existing alarmNo: " + alarm.getAlarmID().substring(Constants.ALARM_KEY.length()) + " - AlarmID: " + alarm.getAlarmID());
         }
         editor.apply();
     }
@@ -62,7 +60,7 @@ public class AlarmUtils {
     public static void cancelAlarm(Context context, Alarm alarm) {
         alarm.setTurnedOn(false);
         Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Integer.parseInt(alarm.getAlarmID().substring(ALARM_KEY.length())), intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Integer.parseInt(alarm.getAlarmID().substring(Constants.ALARM_KEY.length())), intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
             alarmManager.cancel(pendingIntent);

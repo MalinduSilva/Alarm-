@@ -16,7 +16,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -25,13 +24,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.malindu.alarm15.ui.AlarmFragment;
 import com.malindu.alarm15.ui.ClockFragment;
 import com.malindu.alarm15.ui.LocationFragment;
 import com.malindu.alarm15.ui.StopwatchFragment;
 import com.malindu.alarm15.ui.TimerFragment;
+import com.malindu.alarm15.utils.Constants;
+import com.malindu.alarm15.utils.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     private NavigationBarView navigationBarView;
     private Toolbar toolbar;
-    private FloatingActionButton fab;
-    private final String SELECTED_FRAGMENT_ID_KEY = "SELECTED_FRAGMENT_ID";
-    private static final String ALARM_PREFERENCES_FILE = "ALARM_PREFERENCES_FILE";
-    private static final String ALARM_PREFERENCES_FIRST_LAUNCH = "ALARM_PREFERENCES_FIRST_LAUNCH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +53,9 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         setTheme(R.style.AppTheme);
-        SharedPreferences sharedPreferences = getSharedPreferences(ALARM_PREFERENCES_FILE, MODE_PRIVATE);
-        if (sharedPreferences.getBoolean(ALARM_PREFERENCES_FIRST_LAUNCH, true)) {
-            //Intent intent = new Intent(this, FirstLaunchActivity.class);
-            //startActivity(intent);
-            //firstLaunchTour();
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, MODE_PRIVATE);
+        if (sharedPreferences.getBoolean(Constants.ALARM_PREFERENCES_KEY_FIRST_LAUNCH_APP, true)) {
+            firstLaunchTour();
             //sharedPreferences.edit().putBoolean(ALARM_PREFERENCES_FIRST_LAUNCH, false).apply();
 
         }
@@ -79,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         ClockFragment clockFragment = ClockFragment.newInstance();
         if (savedInstanceState != null) {
             // Restore the selected fragment based on the saved instance state
-            int selectedFragmentId = savedInstanceState.getInt(SELECTED_FRAGMENT_ID_KEY, R.id.clockFragment);
+            int selectedFragmentId = savedInstanceState.getInt(Constants.SELECTED_FRAGMENT_ID_KEY, R.id.clockFragment);
             switchFragment(selectedFragmentId);
         } else {
             // Default fragment to open first
@@ -120,42 +114,71 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.welcome_button_permissions, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestNecessaryPermissions(null);
+                        requestPermissions();
                     }
                 })
-                .setNegativeButton(R.string.welcome_button_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.welcome_button_tour, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        getSharedPreferences(ALARM_PREFERENCES_FILE, MODE_PRIVATE)
+                        initTour();
+                    }
+                })
+                .setNeutralButton(R.string.welcome_button_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, MODE_PRIVATE)
                                 .edit()
-                                .putBoolean(ALARM_PREFERENCES_FIRST_LAUNCH, true)
+                                .putBoolean(Constants.ALARM_PREFERENCES_KEY_FIRST_LAUNCH_APP, true)
                                 .apply();
                         finish();
                     }
                 })
                 .show();
     }
-    private void requestNecessaryPermissions(Manifest.permission permission) {
+
+    private void initTour() {
+        //TODO implement tour, at end, check permissions
+        requestPermissions();
+    }
+
+    private void requestPermissions() {
         List<String> permissionsToRequest = new ArrayList<>();
-        if (permission == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {  // API level 33 (Android 13)
-                if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add("android.permission.POST_NOTIFICATIONS");
-                }
+
+        // API level 33 (Android 13) needs permissions to post notifications
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add("android.permission.POST_NOTIFICATIONS");
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  // API level 31 (Android 12)
-                if (ContextCompat.checkSelfPermission(this, "android.permission.USE_FULL_SCREEN_INTENT") != PackageManager.PERMISSION_GRANTED) {
-                    permissionsToRequest.add("android.permission.USE_FULL_SCREEN_INTENT");
-                }
-            }
-            if (!permissionsToRequest.isEmpty()) {
-                ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), 1);
-            }
-        } else {
-            permissionsToRequest.add(permission.toString());
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), 2);
         }
 
+        // API level 31 (Android 12) needs permissions to use full-screen intents, which is used for alarm ringing screen
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  // API level 31 (Android 12)
+            if (ContextCompat.checkSelfPermission(this, "android.permission.USE_FULL_SCREEN_INTENT") != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add("android.permission.USE_FULL_SCREEN_INTENT");
+            }
+        }
+
+        // permission for approximate location
+        if (ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_COARSE_LOCATION") != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add("android.permission.ACCESS_COARSE_LOCATION");
+        }
+        // permission for precise location
+        if (ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_FINE_LOCATION") != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add("android.permission.ACCESS_FINE_LOCATION");
+        }
+        // permission for using internet, to get api data
+        if (ContextCompat.checkSelfPermission(this, "android.permission.INTERNET") != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add("android.permission.INTERNET");
+        }
+        // permission for network state
+        if (ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add("android.permission.ACCESS_NETWORK_STATE");
+        }
+
+        if (!permissionsToRequest.isEmpty()) {
+            PermissionUtils.requestPermissions(this, permissionsToRequest.toArray(new String[0]));
+            //ActivityCompat.requestPermissions(this, permissionsToRequest.toArray(new String[0]), 1);
+        }
     }
 
     private void rearrangeMenuItems(BottomNavigationView bottomNavigationView) {
@@ -232,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         // nav bar resets when the phone is rotated. this is the fix
+        // cause - on config changes, activities are restarted
         int selectedItemId = navigationBarView.getSelectedItemId();
-        outState.putInt(SELECTED_FRAGMENT_ID_KEY, selectedItemId);
+        outState.putInt(Constants.SELECTED_FRAGMENT_ID_KEY, selectedItemId);
     }
 }
