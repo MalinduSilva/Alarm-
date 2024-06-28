@@ -14,10 +14,11 @@
     <string name="label_help">Help</string>
 
     <!-- Labels (Top of each fragment)  -->
-    <string name="clock_fragment">Clock fragment</string>
-    <string name="alarm_fragment">Alarm</string>
-    <string name="timer_fragment">Timer</string>
-    <string name="stopwatch_fragment">Stopwatch</string>
+    <string name="title_clock_fragment">Clock fragment</string>
+    <string name="title_alarm_fragment">Alarm</string>
+    <string name="title_location_fragment">Location</string>
+    <string name="title_timer_fragment">Timer</string>
+    <string name="title_stopwatch_fragment">Stopwatch</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
     <!-- Labels (Add Alarm dialog)   -->
@@ -43,12 +44,21 @@
     <string name="hint_add_location_alarm">Add location alarm</string>
     <string name="dummy_delete_pref">Delete pref</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <!-- Welcome Screen strings   -->
     <string name="welcome_title">Welcome</string>
-    <string name="welcome_message">Hi, This app was developed by Malindu.\nSome permissions are needed for functionality of this app.</string>
+    <string name="welcome_message">This app was developed by Malindu.\n\nFollowing permissions are required for the proper functionality of this app.</string>
     <string name="welcome_button_permissions">Review Permissions</string>
+    <string name="welcome_button_tour">Take Tour</string>
     <string name="welcome_button_cancel">Quit</string>
+
+    <string name="dialog_permissions_title_first">Hey there!</string>
+    <string name="dialog_permissions_title_second">If we say "Please" ?</string>
+    <string name="dialog_permissions_title_third">Sadly, you have no other choice</string>
+    <string name="dialog_permissions_message">Following permissions are required for using Alarm features</string>
+    <string name="dialog_permissions_ok">Got it</string>
+    <string name="dialog_permissions_cancel">Over my dead body!</string>
+    <string name="dialog_alarm_delete_title">Confirm</string>
+    <string name="dialog_alarm_delete_message">This action cannot be reversed.</string>
+    <string name="dialog_alarm_delete_ok">Delete</string>
+    <string name="dialog_alarm_delete_cancel">Cancel</string>
 </resources>

@@ -1,10 +1,13 @@
 package com.malindu.alarm15.adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,10 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.malindu.alarm15.R;
+import com.malindu.alarm15.ui.AlarmFragment;
 import com.malindu.alarm15.utils.AlarmUtils;
 import com.malindu.alarm15.models.Alarm;
+import com.malindu.alarm15.utils.Constants;
+import com.malindu.alarm15.utils.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,10 +35,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     private Map<String, ?> allAlarms;
     private ArrayList<Alarm> alarmList;
     private Context context;
-    private static final String ALARM_PREFERENCES_FILE = "ALARM_PREFERENCES_FILE";
-    private static final String ALARM_KEY  = "ALARM_";
-    private static final String ALARM_COUNT_KEY  = "ALARM_COUNT";
-    public interface OnAlarmClickListener { void onAlarmClick(Alarm alarm); }
+    public interface OnAlarmClickListener { void onAlarmClick(Alarm alarm); void onAlarmDeleted(); }
     private OnAlarmClickListener alarmClickListener;
     public void setOnAlarmClickListener(OnAlarmClickListener listener) { this.alarmClickListener = listener; }
 
@@ -39,17 +43,16 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         this.context = context;
         alarmList = new ArrayList<>();
         loadAlarms();
-
     }
     private void loadAlarms() {
-        SharedPreferences sp = context.getSharedPreferences(ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
         allAlarms = sp.getAll();
         alarmList.clear();
         for (Map.Entry<String, ?> entry : allAlarms.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             //Log.d(TAG, "AlarmList { key: " + key + ", value: " + value.toString() + "}");
-            if (!key.equals(ALARM_COUNT_KEY)) {
+            if (key.startsWith("ALARM_ID_")) {
                 Alarm alarm = Alarm.getAlarmObj(value.toString());
                 alarmList.add(alarm);
             }
@@ -73,13 +76,28 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarmList.get(position);
+
+        // FAB covers the switch on last alarm card. This will fix it by adding extra bottom padding to the last element.
+        if (position == getItemCount() - 1) {
+            holder.itemView.setPadding(holder.itemView.getPaddingLeft(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingRight(),
+                    300);
+        } else {
+            holder.itemView.setPadding(holder.itemView.getPaddingLeft(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingRight(),
+                    holder.itemView.getPaddingBottom());
+        }
+
         if (alarm.getAlarmLabel().isEmpty()) {
-            holder.cardview_alarm_label_layout.setVisibility(View.GONE);
+            //holder.cardview_alarm_label_layout.setVisibility(View.GONE); //TODO: change this
+            holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
+            holder.alarmLabel.setText(alarm.getAlarmID());
         } else {
             holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
             holder.alarmLabel.setText(alarm.getAlarmLabel());
         }
-        holder.turnOnSwitch.setChecked(alarm.getTurnedOn());
         holder.alarmTime.setText(Alarm.getAlarmTimeAsText(context, alarm));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +108,8 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
                 //Toast.makeText(context, "card clicked", Toast.LENGTH_SHORT).show();
             }
         });
+        holder.turnOnSwitch.setOnCheckedChangeListener(null);
+        holder.turnOnSwitch.setChecked(alarm.getTurnedOn());
         holder.turnOnSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -101,6 +121,50 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
                 }
             }
         });
+        holder.cardView.setLongClickable(true);
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                holder.btnDeleteAlarm.setVisibility(View.VISIBLE);
+                return true;
+            }
+        });
+        holder.btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialAlertDialogBuilder(context)
+                        .setTitle(R.string.dialog_alarm_delete_title)
+                        .setMessage(R.string.dialog_alarm_delete_message)
+                        .setPositiveButton(R.string.dialog_alarm_delete_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AlarmUtils.deleteAlarm(context, alarm);
+                                if (alarmClickListener != null) {
+                                    alarmClickListener.onAlarmDeleted();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_alarm_delete_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                holder.btnDeleteAlarm.setVisibility(View.GONE);
+                                //requireActivity().finish();
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
+            }
+        });
+        holder.cardview_alarm_frequency_weekdays_layout.setVisibility(alarm.isSet_for_weekdays() ? View.VISIBLE : View.GONE);
+        holder.cardview_alarm_frequency_date.setVisibility(alarm.isSet_for_date() ? View.VISIBLE : View.GONE);
+        holder.cardview_txt_monday.setTextColor(alarm.getWeekdays(0) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_tuesday.setTextColor(alarm.getWeekdays(1) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_wednesday.setTextColor(alarm.getWeekdays(2) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_thursday.setTextColor(alarm.getWeekdays(3) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_friday.setTextColor(alarm.getWeekdays(4) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_saturday.setTextColor(alarm.getWeekdays(5) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_txt_sunday.setTextColor(alarm.getWeekdays(6) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
+        holder.cardview_alarm_frequency_date.setText(alarm.getAlarmDateAsText());
     }
 
     @Override
@@ -113,6 +177,11 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         private LinearLayout cardview_alarm_label_layout;
         private MaterialSwitch turnOnSwitch;
         private MaterialCardView cardView;
+        private Button btnDeleteAlarm;
+        private LinearLayout cardview_alarm_frequency_weekdays_layout;
+        private TextView cardview_alarm_frequency_date;
+        private TextView cardview_txt_monday, cardview_txt_tuesday, cardview_txt_wednesday, cardview_txt_thursday, cardview_txt_friday,
+                cardview_txt_saturday, cardview_txt_sunday;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             alarmLabel = itemView.findViewById(R.id.cardview_alarm_label);
@@ -120,6 +189,16 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
             turnOnSwitch = itemView.findViewById(R.id.cardview_alarm_switch);
             alarmTime = itemView.findViewById(R.id.cardview_alarm_time);
             cardView = itemView.findViewById(R.id.cardview_alarm_item_parent);
+            btnDeleteAlarm = itemView.findViewById(R.id.btnDeleteAlarm);
+            cardview_alarm_frequency_weekdays_layout = itemView.findViewById(R.id.cardview_alarm_frequency_weekdays_layout);
+            cardview_alarm_frequency_date = itemView.findViewById(R.id.cardview_alarm_frequency_date);
+            cardview_txt_monday = itemView.findViewById(R.id.cardview_txt_monday);
+            cardview_txt_tuesday = itemView.findViewById(R.id.cardview_txt_tuesday);
+            cardview_txt_wednesday = itemView.findViewById(R.id.cardview_txt_wednesday);
+            cardview_txt_thursday = itemView.findViewById(R.id.cardview_txt_thursday);
+            cardview_txt_friday = itemView.findViewById(R.id.cardview_txt_friday);
+            cardview_txt_saturday = itemView.findViewById(R.id.cardview_txt_saturday);
+            cardview_txt_sunday = itemView.findViewById(R.id.cardview_txt_sunday);
         }
     }
 }

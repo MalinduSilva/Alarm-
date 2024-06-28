@@ -8,10 +8,10 @@
     android:id="@+id/layout_alarm">
 
     <TextView
-        android:id="@+id/label_alarms"
+        android:id="@+id/title_alarm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/alarm_fragment"
+        android:text="@string/title_alarm_fragment"
         android:textSize="40sp"
         android:layout_marginStart="10dp"/>
 
@@ -19,7 +19,7 @@
         android:id="@+id/alarm_list_recview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/label_alarms"/>
+        android:layout_below="@id/title_alarm"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
