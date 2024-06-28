@@ -2,6 +2,8 @@ package com.malindu.alarm15.utils;
 
 import android.Manifest;
 
+import java.util.ArrayList;
+
 public class Constants {
 
     /**
@@ -35,7 +37,7 @@ public class Constants {
     /**
      * Prefix for the id for an alarm
      */
-    public static final String ALARM_KEY  = "ALARM_";
+    public static final String ALARM_KEY  = "ALARM_ID_";
 
 
     /**
@@ -72,4 +74,13 @@ public class Constants {
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_NETWORK_STATE
     };
+
+    /** This method can be called to get a list of keys that are in app's shared preferences file, but not an alarm entry
+     * @return {@link ArrayList<String>}
+     */
+    public static ArrayList<String> getNonAlarmSPKeys() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add(ALARM_COUNT_KEY);
+        return list;
+    }
 }

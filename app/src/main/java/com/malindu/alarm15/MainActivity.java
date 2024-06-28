@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(Constants.ALARM_PREFERENCES_KEY_FIRST_LAUNCH_APP, true)) {
-            firstLaunchTour();
+            //firstLaunchTour();
             //sharedPreferences.edit().putBoolean(ALARM_PREFERENCES_FIRST_LAUNCH, false).apply();
 
         }
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                 })
+                .setCancelable(false)
                 .show();
     }
 

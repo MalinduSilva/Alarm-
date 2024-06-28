@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
@@ -26,6 +27,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         Log.d(TAG, "onReceive: " + intent.getStringExtra("AlarmStr"));
         Alarm alarm = new Alarm();
         alarm = Alarm.getAlarmObj(intent.getStringExtra("AlarmStr"));
+        alarm.setTurnedOn(false);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(alarm.getAlarmID(), alarm.getStringObj());
+        editor.apply();
         Intent fullscreenIntent = new Intent(context, AlarmRingFullscreenActivity.class);
         fullscreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent fullscreenPendingIntent = PendingIntent.getActivity(context, 0, fullscreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -37,14 +43,14 @@ public class AlarmReceiver extends BroadcastReceiver {
                     Constants.CHANNEL_ID_ALARM,
                     "Alarm Notifications",
                     NotificationManager.IMPORTANCE_HIGH);
-            channel.setBypassDnd(true);
+            channel.setBypassDnd(true); //TODO this is not working, has to guide the user to manually enable it
             notificationManager.createNotificationChannel(channel);
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.CHANNEL_ID_ALARM)
                 .setSmallIcon(R.drawable.icon_alarm_outlined)
-                .setContentTitle(alarm.getAlarmLabel())
-                .setContentText("Wake up! Your alarm is ringing.")
+                .setContentTitle(alarm.getAlarmLabel().isEmpty() ? "Alarm" : alarm.getAlarmLabel())
+                .setContentText(alarm.getAlarmID() + " - " + Alarm.getAlarmTimeAsText(context, alarm))//"Wake up! Your alarm is ringing.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(fullscreenPendingIntent, true)

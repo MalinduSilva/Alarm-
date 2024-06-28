@@ -5,6 +5,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -17,11 +18,19 @@ public class Alarm implements Serializable {
     private boolean sound = true;
     private boolean vibration = true;
     private boolean snooze = false;
+    private boolean set_for_date = false; private boolean set_for_weekdays = false;
+    private boolean set_for_today = false; private boolean set_for_tomorrow = true;
 
     public Alarm() {
         for (int i = 0; i <7; i++) {
             weekdays[i] = false;
         }
+        Calendar c = Calendar.getInstance();
+        alarmTime.set(Calendar.YEAR, c.get(Calendar.YEAR));
+        alarmTime.set(Calendar.MONTH, c.get(Calendar.MONTH));
+        alarmTime.set(Calendar.DATE, c.get(Calendar.DATE) + 1);
+        alarmTime.set(Calendar.HOUR_OF_DAY, c.get(Calendar.HOUR_OF_DAY));
+        alarmTime.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
         alarmTime.set(Calendar.SECOND, 0);
         alarmTime.set(Calendar.MILLISECOND, 0);
     }
@@ -31,7 +40,7 @@ public class Alarm implements Serializable {
      */
     public String getStringObj() {
         return "Alarm{" + alarmID + "|" + alarmLabel + "|" + isTurnedOn + "|" + alarmTime.getTimeInMillis() + "|" + Arrays.toString(weekdays) + "|" +
-                sound + "|" + vibration + "|" + snooze + "}";
+                sound + "|" + vibration + "|" + snooze + "|" + set_for_date + "|" + set_for_weekdays + "|" + set_for_today + "|" + set_for_tomorrow + "}";
     }
     public static Alarm getAlarmObj(String str) {
         Alarm alarm = new Alarm();
@@ -41,11 +50,21 @@ public class Alarm implements Serializable {
         alarm.setAlarmLabel(alarmSplit[1]);
         alarm.setTurnedOn(Boolean.parseBoolean(alarmSplit[2]));
         alarm.alarmTime.setTimeInMillis(Long.parseLong(alarmSplit[3]));
-        String[] weekdays = alarmSplit[4].substring(1, alarmSplit[4].length()-1).split(","); for (int i = 0; i < weekdays.length; i++) {alarm.setWeekdays(i, Boolean.parseBoolean(weekdays[i]));}
+        String[] weekdays = alarmSplit[4].substring(1, alarmSplit[4].length()-1).split(",");
+        //Log.d("Alarm", "getAlarmObj: " + Arrays.toString(weekdays));
+        for (int i = 0; i < weekdays.length; i++) {
+            alarm.setWeekdays(i, Boolean.parseBoolean(weekdays[i].trim()));
+            //String s = " true";
+            //Log.d("Alarm", "getAlarmObj: " + i + ":" + weekdays[i].trim() + "::::" + Boolean.parseBoolean(weekdays[i].trim()));
+        }
         alarm.setSound(Boolean.parseBoolean(alarmSplit[5]));
         alarm.setVibration(Boolean.parseBoolean(alarmSplit[6]));
         alarm.setSnooze(Boolean.parseBoolean(alarmSplit[7]));
-        Log.d("Alarm", "getAlarmObj: parse successful - " + alarm.getAlarmID());
+        alarm.setSet_for_date(Boolean.parseBoolean(alarmSplit[8]));
+        alarm.setSet_for_weekdays(Boolean.parseBoolean(alarmSplit[9]));
+        alarm.setSet_for_today(Boolean.parseBoolean(alarmSplit[10]));
+        alarm.setSet_for_tomorrow(Boolean.parseBoolean(alarmSplit[11]));
+        Log.d("Alarm", "getAlarmObj: parse successful - " + alarm.getStringObj() + "---" + str);
         return alarm;
     }
 
@@ -58,6 +77,7 @@ public class Alarm implements Serializable {
         } else {
             hour = alarm.getAlarmTime().get(Calendar.HOUR);
             am_pm = alarm.getAlarmTime().get(Calendar.AM_PM) == Calendar.AM ? " AM" : " PM";
+            hour = alarm.getAlarmTime().get(Calendar.AM_PM) == Calendar.PM && hour == 0 ?  12 : hour;
         }
         time = String.valueOf(hour);
         if (alarm.getAlarmTime().get(Calendar.MINUTE) < 10) {
@@ -67,6 +87,77 @@ public class Alarm implements Serializable {
         }
         time += am_pm;
         return time;
+    }
+    public String getAlarmDateAsText() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMMM");
+        String date = "test";
+        Calendar calendar = Calendar.getInstance();
+        if (isSet_for_today()) {
+            date = "Today, ";// + calendar.get(Calendar.DAY_OF_WEEK) + " " + calendar.get(Calendar.DATE) + " " + calendar.get(Calendar.MONTH);
+            date += dateFormat.format(getAlarmTime().getTime());
+        } else if (isSet_for_tomorrow()) {
+            date = "Tomorrow, ";// + calendar.get(Calendar.DAY_OF_WEEK + 1) + " " + calendar.get(Calendar.DATE + 1) + " " + calendar.get(Calendar.MONTH);
+            date += dateFormat.format(getAlarmTime().getTime());
+        } else if (isSet_for_date()) {
+            date = dateFormat.format(getAlarmTime().getTime());
+            //date = alarmTime.get(Calendar.DAY_OF_WEEK) + ", " + alarmTime.get(Calendar.DATE) + " " + alarmTime.get(Calendar.MONTH);
+        } else if (isSet_for_weekdays()) {
+//            date = "Every ";
+//            date += weekdays[0] ? "Mon," : "";
+//            date += weekdays[1] ? "Tue," : "";
+//            date += weekdays[2] ? "Wed," : "";
+//            date += weekdays[3] ? "Thu," : "";
+//            date += weekdays[4] ? "Fri," : "";
+//            date += weekdays[5] ? "Sat," : "";
+//            date += weekdays[6] ? "Sun" : "";
+
+//            String[] dayNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+//            StringBuilder result = new StringBuilder("Every ");
+//
+//            boolean first = true;
+//            for (int i = 0; i < weekdays.length; i++) {
+//                if (weekdays[i]) {
+//                    if (!first) {
+//                        result.append(", ");
+//                    }
+//                    result.append(dayNames[i]);
+//                    first = false;
+//                }
+//            }
+//            date = result.toString();
+
+            String[] dayNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+            StringBuilder result = new StringBuilder();
+
+            boolean first = true;
+            boolean anyDaySelected = false;
+            for (int i = 0; i < weekdays.length; i++) {
+                if (weekdays[i]) {
+                    if (!first) {
+                        result.append(", ");
+                    } else {
+                        result.append("Every ");
+                        first = false;
+                    }
+                    result.append(dayNames[i]);
+                    anyDaySelected = true;
+                }
+            }
+
+            if (!anyDaySelected) {
+                result.setLength(0); // Clear the StringBuilder
+                //result.append("No days selected");
+                Calendar c = Calendar.getInstance();
+                if (alarmTime.after(c)) {
+                    setSet_for_today(true);
+                } else {
+                    setSet_for_tomorrow(true);
+                }
+                return getAlarmDateAsText();
+            }
+            date = result.toString();
+        }
+        return  date;
     }
 
     public void setDate(int year, int month, int day_of_month) {
@@ -111,7 +202,9 @@ public class Alarm implements Serializable {
         this.alarmTime = alarmTime;
     }
 
-    public boolean getWeekdays(int weekday) { return weekdays[weekday]; }
+    public boolean getWeekdays(int weekday) {
+        return weekdays[weekday];
+    }
 
     public void setWeekdays(int weekday, boolean state) {
         this.weekdays[weekday] = state;
@@ -141,6 +234,38 @@ public class Alarm implements Serializable {
         this.snooze = snooze;
     }
 
+    public boolean isSet_for_date() {
+        return set_for_date;
+    }
+
+    public void setSet_for_date(boolean set_for_date) {
+        this.set_for_date = set_for_date;
+    }
+
+    public boolean isSet_for_weekdays() {
+        return set_for_weekdays;
+    }
+
+    public void setSet_for_weekdays(boolean set_for_weekdays) {
+        this.set_for_weekdays = set_for_weekdays;
+    }
+
+    public boolean isSet_for_today() {
+        return set_for_today;
+    }
+
+    public void setSet_for_today(boolean set_for_today) {
+        this.set_for_today = set_for_today;
+    }
+
+    public boolean isSet_for_tomorrow() {
+        return set_for_tomorrow;
+    }
+
+    public void setSet_for_tomorrow(boolean set_for_tomorrow) {
+        this.set_for_tomorrow = set_for_tomorrow;
+    }
+
     @Override
     public String toString() {
         return "Alarm{" +
@@ -152,6 +277,8 @@ public class Alarm implements Serializable {
                 ", sound=" + sound +
                 ", vibration=" + vibration +
                 ", snooze=" + snooze +
+                ", set_for_date=" + set_for_date +
+                ", set_for_weekdays=" + set_for_weekdays +
                 '}';
     }
 }

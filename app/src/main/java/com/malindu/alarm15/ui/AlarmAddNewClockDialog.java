@@ -2,11 +2,13 @@ package com.malindu.alarm15.ui;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -32,8 +34,9 @@ public class AlarmAddNewClockDialog extends DialogFragment {
     private ChipGroup chipGroupWeek;
     private EditText alarmLabel;
     private MaterialSwitch switch_sound, switch_vibration, switch_snooze;
+    private TextView txt_alarm_frequency;
     private Alarm newAlarm = new Alarm();
-    private boolean set_for_date = false; private boolean set_for_weekdays = false;
+    //private boolean set_for_date = false; private boolean set_for_weekdays = false;
     public interface OnAlarmAddedListener { void onAlarmAdded(); }
     private OnAlarmAddedListener listener;
 
@@ -63,6 +66,7 @@ public class AlarmAddNewClockDialog extends DialogFragment {
         switch_sound = view.findViewById(R.id.switch_sound);
         switch_vibration = view.findViewById(R.id.switch_vibration);
         switch_snooze = view.findViewById(R.id.switch_snooze);
+        txt_alarm_frequency = view.findViewById(R.id.txt_alarm_frequency);
 
         // Check if an existing Alarm object is provided
         if (getArguments() != null && getArguments().containsKey("alarm")) {
@@ -70,7 +74,9 @@ public class AlarmAddNewClockDialog extends DialogFragment {
             populateFieldsWithExistingData();
         } else {
             newAlarm = new Alarm();
+            newAlarm.setSet_for_tomorrow(true);
         }
+        txt_alarm_frequency.setText(newAlarm.getAlarmDateAsText());
 
         btnDiscard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,16 +87,27 @@ public class AlarmAddNewClockDialog extends DialogFragment {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDialog().dismiss();
                 newAlarm.setAlarmLabel(alarmLabel.getText().toString());
                 newAlarm.setSound(switch_sound.isChecked());
                 newAlarm.setVibration(switch_vibration.isChecked());
                 newAlarm.setSnooze(switch_snooze.isChecked());
                 newAlarm.setTurnedOn(true);
+                if (!newAlarm.isSet_for_date() && !newAlarm.isSet_for_weekdays()) {
+                    Calendar currentTime = Calendar.getInstance();
+                    if (newAlarm.getAlarmTime().after(currentTime)) {
+                        newAlarm.setSet_for_today(true);
+                        newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DATE));
+                    } else {
+                        newAlarm.setSet_for_tomorrow(true);
+                        newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DATE) + 1);
+                    }
+                }
+                //AlarmUtils.setAlarmm(requireContext(), newAlarm, true);
                 AlarmUtils.setAlarm(requireContext(), newAlarm);
                 if (listener != null) {
                     listener.onAlarmAdded();
                 }
+                getDialog().dismiss();
             }
         });
         chipGroupWeek.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
@@ -106,15 +123,24 @@ public class AlarmAddNewClockDialog extends DialogFragment {
                         chip.setChipStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.ash_border)));
                     }
                 }
-                set_for_date = false; set_for_weekdays = true;
-                Calendar c = Calendar.getInstance();
-                newAlarm.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                //set_for_date = false; set_for_weekdays = true;
+                newAlarm.setSet_for_weekdays(true); newAlarm.setSet_for_date(false);
+                newAlarm.setSet_for_today(false); newAlarm.setSet_for_tomorrow(false);
+                //Calendar c = Calendar.getInstance();
+                //newAlarm.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                txt_alarm_frequency.setText(newAlarm.getAlarmDateAsText());
             }
         });
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 newAlarm.setTime(hourOfDay, minute);
+                Calendar currentTime = Calendar.getInstance();
+                if (!newAlarm.isSet_for_weekdays() && !newAlarm.isSet_for_date()) {
+                    if (newAlarm.getAlarmTime().after(currentTime)) { newAlarm.setSet_for_today(true);
+                    } else { newAlarm.setSet_for_tomorrow(true); }
+                }
+                txt_alarm_frequency.setText(newAlarm.getAlarmDateAsText());
             }
         });
         btnCalendar.setOnClickListener(new View.OnClickListener() {
@@ -133,13 +159,15 @@ public class AlarmAddNewClockDialog extends DialogFragment {
                             Chip chip = (Chip) chipGroupWeek.getChildAt(i);
                             chip.setChipStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.ash_border)));
                         }
+                        newAlarm.setSet_for_weekdays(false); newAlarm.setSet_for_date(true);
+                        newAlarm.setSet_for_today(false); newAlarm.setSet_for_tomorrow(false);
                         Calendar c = Calendar.getInstance();
                         c.setTimeInMillis(aLong);
                         newAlarm.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+                        txt_alarm_frequency.setText(newAlarm.getAlarmDateAsText());
                     }
                 });
                 datePicker.show(getChildFragmentManager(), TAG);
-
             }
         });
         return view;
@@ -160,7 +188,11 @@ public class AlarmAddNewClockDialog extends DialogFragment {
             } else {
                 chip.setChipStrokeColor(ColorStateList.valueOf(getResources().getColor(R.color.ash_border)));
             }
+            //Log.d(TAG, "populateFieldsWithExistingData: " + i + newAlarm.getWeekdays(i));
         }
+//        for (int i = 0; i < 7; i++) {
+//            Log.d(TAG, "Weekday " + i + ": " + newAlarm.getWeekdays(i));
+//        }
     }
 
     @Override
