@@ -26,6 +26,7 @@ import com.malindu.alarm15.utils.Constants;
 import com.malindu.alarm15.utils.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecyclerViewAdapter.ViewHolder> {
@@ -52,11 +53,12 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
             String key = entry.getKey();
             Object value = entry.getValue();
             //Log.d(TAG, "AlarmList { key: " + key + ", value: " + value.toString() + "}");
-            if (key.startsWith("ALARM_ID_")) {
+            if (key.startsWith(Constants.ALARM_KEY)) {
                 Alarm alarm = Alarm.getAlarmObj(value.toString());
                 alarmList.add(alarm);
             }
         }
+        Collections.sort(alarmList);
     }
     public void updateData() {
         //loadAlarmsFromPreferences();
@@ -87,7 +89,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
             holder.itemView.setPadding(holder.itemView.getPaddingLeft(),
                     holder.itemView.getPaddingTop(),
                     holder.itemView.getPaddingRight(),
-                    holder.itemView.getPaddingBottom());
+                    0); // holder.itemView.getPaddingBottom() cannot be used because other items get 300 too
         }
 
         if (alarm.getAlarmLabel().isEmpty()) {

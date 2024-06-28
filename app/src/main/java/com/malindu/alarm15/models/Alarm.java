@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 
-public class Alarm implements Serializable {
+public class Alarm implements Serializable, Comparable<Alarm> {
     private String alarmID = "";
     private String alarmLabel = "";
     private boolean isTurnedOn = false;
@@ -280,5 +280,10 @@ public class Alarm implements Serializable {
                 ", set_for_date=" + set_for_date +
                 ", set_for_weekdays=" + set_for_weekdays +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Alarm other) {
+        return Long.compare(this.alarmTime.getTimeInMillis(), other.alarmTime.getTimeInMillis());
     }
 }

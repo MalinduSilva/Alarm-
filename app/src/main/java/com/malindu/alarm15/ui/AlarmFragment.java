@@ -104,19 +104,7 @@ public class AlarmFragment extends Fragment implements AlarmAddNewClockDialog.On
         adapter = new AlarmRecyclerViewAdapter(requireContext());
         adapter.setOnAlarmClickListener(this);
         alarmListRecyclerView.setAdapter(adapter);
-        alarmListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()) {
-            @Override
-            public void onLayoutCompleted(RecyclerView.State state) {
-                super.onLayoutCompleted(state);
-                int itemCount = getItemCount();
-                if (itemCount > 0) {
-                    View lastItem = findViewByPosition(itemCount - 1);
-                    if (lastItem != null) {
-                        lastItem.setPadding(0, 0, 0, fabAddAlarm.getHeight());
-                    }
-                }
-            }
-        });
+        alarmListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         deletePreferences = view.findViewById(R.id.btn_test_delete_sharedpreferences);
         deletePreferences.setOnClickListener(new View.OnClickListener() {
