@@ -83,4 +83,9 @@ public class Constants {
         list.add(ALARM_COUNT_KEY);
         return list;
     }
+
+    public static final String ACTION_SNOOZE = "com.malindu.alarm15.ACTION_SNOOZE";
+    public static final String ACTION_DISMISS = "com.malindu.alarm15.ACTION_DISMISS";
+    public static final String ACTION_START_ALARM = "com.malindu.alarm15.ACTION_START_ALARM";
+    public static final String ACTION_STOP_ALARM = "com.malindu.alarm15.ACTION_STOP_ALARM";
 }

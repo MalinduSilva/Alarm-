@@ -1,6 +1,7 @@
 package com.malindu.alarm15.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -13,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.malindu.alarm15.R;
 
 public class AlarmRingFullscreenActivity extends AppCompatActivity {
+    private static final String TAG = "AlarmRingFullscreenActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,5 +34,6 @@ public class AlarmRingFullscreenActivity extends AppCompatActivity {
                 finish();
             }
         });
+        Log.d(TAG, "onCreate: ");
     }
 }

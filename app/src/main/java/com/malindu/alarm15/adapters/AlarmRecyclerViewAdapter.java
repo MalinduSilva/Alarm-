@@ -1,8 +1,11 @@
 package com.malindu.alarm15.adapters;
 
+import static androidx.core.content.ContextCompat.getColor;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,20 +81,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarmList.get(position);
-
-        // FAB covers the switch on last alarm card. This will fix it by adding extra bottom padding to the last element.
-        if (position == getItemCount() - 1) {
-            holder.itemView.setPadding(holder.itemView.getPaddingLeft(),
-                    holder.itemView.getPaddingTop(),
-                    holder.itemView.getPaddingRight(),
-                    300);
-        } else {
-            holder.itemView.setPadding(holder.itemView.getPaddingLeft(),
-                    holder.itemView.getPaddingTop(),
-                    holder.itemView.getPaddingRight(),
-                    0); // holder.itemView.getPaddingBottom() cannot be used because other items get 300 too
-        }
-
         if (alarm.getAlarmLabel().isEmpty()) {
             //holder.cardview_alarm_label_layout.setVisibility(View.GONE); //TODO: change this
             holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
@@ -110,7 +99,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
                 //Toast.makeText(context, "card clicked", Toast.LENGTH_SHORT).show();
             }
         });
-        holder.turnOnSwitch.setOnCheckedChangeListener(null);
+        holder.turnOnSwitch.setOnCheckedChangeListener(null); // To fix random alarms getting turned on
         holder.turnOnSwitch.setChecked(alarm.getTurnedOn());
         holder.turnOnSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
