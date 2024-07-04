@@ -27,6 +27,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -36,6 +39,11 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    //implementation(libs.play.services.places)
+    //implementation(libs.play.services)
+    implementation(libs.places)
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

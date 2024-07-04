@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Alarm 15</string>
+    <string name="api_key">${apiKey}</string>
 
     <!-- TODO: Delete all which start with dummy_ and find their usages and delete them too  -->
     <!-- Labels (Bottom NavBar) -->
@@ -61,4 +62,13 @@
     <string name="dialog_alarm_delete_message">This action cannot be reversed.</string>
     <string name="dialog_alarm_delete_ok">Delete</string>
     <string name="dialog_alarm_delete_cancel">Cancel</string>
+
+    <!-- Add Location Alarm Dialog labels -->
+    <string name="label_notify_sensitivity">Notify sensitivity :</string>
+    <string name="label_in_proximity">In Proximity</string>
+    <string name="label_on_exact_location">On Exact Location</string>
+    <string name="label_range">Range :</string>
+    <string name="label_meters">meters</string>
+    <string name="hint_search">Search</string>
+    <string name="label_where_to">Where to...</string>
 </resources>

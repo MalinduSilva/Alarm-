@@ -1,12 +1,8 @@
 package com.malindu.alarm15.adapters;
 
-import static androidx.core.content.ContextCompat.getColor;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +18,9 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.malindu.alarm15.R;
-import com.malindu.alarm15.ui.AlarmFragment;
 import com.malindu.alarm15.utils.AlarmUtils;
 import com.malindu.alarm15.models.Alarm;
 import com.malindu.alarm15.utils.Constants;
-import com.malindu.alarm15.utils.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +67,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_alarm_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cardview_alarm, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;
     }

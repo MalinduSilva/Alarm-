@@ -88,4 +88,6 @@ public class Constants {
     public static final String ACTION_DISMISS = "com.malindu.alarm15.ACTION_DISMISS";
     public static final String ACTION_START_ALARM = "com.malindu.alarm15.ACTION_START_ALARM";
     public static final String ACTION_STOP_ALARM = "com.malindu.alarm15.ACTION_STOP_ALARM";
+
+    public static final float DEFAULT_MAP_ZOOM = 15f;
 }

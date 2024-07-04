@@ -12,68 +12,163 @@
         android:layout_height="wrap_content"
         android:text="@string/label_add_alarm"
         android:textSize="40sp"
-        android:layout_marginHorizontal="10dp"/>
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"/>
 
     <fragment
         android:id="@+id/mapView"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_below="@id/label_add_alarm"
+        android:layout_above="@id/layout_sensitivity"
         android:layout_marginHorizontal="5dp"
         android:layout_width="match_parent"
-        android:layout_height="300dp"/>
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/layout_searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/label_add_alarm"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:elevation="10dp"
+        android:background="@drawable/background_location_searchbar">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/icon_magnify"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/icon_search"
+            android:contentDescription="@string/hint_search" />
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/icon_magnify"
+            android:paddingHorizontal="10dp"
+            android:autofillHints="Enter location"
+            android:hint="@string/hint_search"
+            android:id="@+id/editTextSearch"
+            android:imeOptions="actionSearch"
+            android:background="@null"
+            android:layout_centerVertical="true"/>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginVertical="10dp"
+            android:layout_marginEnd="-5dp"
+            android:visibility="gone"/>
+        <!-- style="@style/Widget.AppCompat.ProgressBar.Horizontal"   -->
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_searchbar"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/background_location_searchbar"
+        android:visibility="gone"/>
+    
+<!--    <fragment-->
+<!--        android:id="@+id/autocomplete_fragment"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
+<!--        android:layout_below="@id/layout_searchbar"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_marginHorizontal="10dp"/>-->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/mapView"
+        android:layout_alignBottom="@id/mapView"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:gravity="end">
+        <ImageView
+            android:id="@+id/btnZoomIn"
+            android:tag="zoom"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/icon_plus_sign"
+            android:background="@drawable/background_map_controllers" />
+        <ImageView
+            android:id="@+id/btnZoomOut"
+            android:tag="zoom"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/icon_minus_sign"
+            android:background="@drawable/background_map_controllers"
+            android:layout_marginTop="3dp"/>
+        <ImageView
+            android:id="@+id/btnLocateMe"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/icon_locate_me"
+            android:background="@drawable/background_map_controllers"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/layout_sensitivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/mapView"
-        android:layout_margin="10dp">
+        android:layout_above="@id/layout_range"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp">
         <TextView
             android:id="@+id/label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notify sensitivity :"
+            android:text="@string/label_notify_sensitivity"
             android:layout_centerVertical="true"/>
 
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/radio"
+            android:id="@+id/radioGroup"
             android:orientation="horizontal"
             android:layout_alignParentEnd="true">
             <RadioButton
-                android:id="@+id/radioButton"
+                android:id="@+id/radioButtonProximity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="In Proximity"
+                android:text="@string/label_in_proximity"
                 android:checked="true"/>
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/radioButtonExact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="On Exact Location" />
+                android:text="@string/label_on_exact_location"/>
         </RadioGroup>
     </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_range"
-        android:layout_below="@id/layout_sensitivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:orientation="horizontal"
+        android:layout_above="@id/layout_save_discard">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Range :"/>
+            android:text="@string/label_range"/>
         <EditText
+            android:id="@+id/txtRange"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="number"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="meters"/>
+            android:text="@string/label_meters"/>
     </LinearLayout>
 
     <LinearLayout
@@ -81,7 +176,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="10dp">
+        android:layout_marginHorizontal="10dp"
+        android:id="@+id/layout_save_discard">
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

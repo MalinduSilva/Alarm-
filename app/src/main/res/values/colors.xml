@@ -5,6 +5,11 @@
     <color name="ash_border">#E3E3E3</color>
     <color name="ash">#837575</color>
     <color name="transparent">#00000000</color>
+    <color name="white_90">#E6FFFFFF</color>
+    <color name="white_80">#CCFFFFFF</color>
+    <color name="white_70">#77FFFFFF</color>
+    <color name="white_50">#80FFFFFF</color>
+    <color name="white_10">#1AFFFFFF</color>
 
     <!-- Material Design Theme Builder   -->
     <color name="md_theme_primary">#29638A</color>
