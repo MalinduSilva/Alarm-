@@ -3,6 +3,7 @@ package com.malindu.alarm15.adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -154,6 +155,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: " + alarmList.size());
         return alarmList.size();
     }
 

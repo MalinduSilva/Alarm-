@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -31,9 +32,11 @@ import com.malindu.alarm15.ui.LocationFragment;
 import com.malindu.alarm15.ui.StopwatchFragment;
 import com.malindu.alarm15.ui.TimerFragment;
 import com.malindu.alarm15.utils.Constants;
+import com.malindu.alarm15.utils.LocationUtils;
 import com.malindu.alarm15.utils.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
     private NavigationBarView navigationBarView;
     private Toolbar toolbar;
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        Log.d(TAG, "onRequestPermissionsResult: " + requestCode +":"+ Arrays.toString(permissions) +":"+ Arrays.toString(grantResults));
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +114,15 @@ public class MainActivity extends AppCompatActivity {
 //                Toast.makeText(MainActivity.this, "fab", Toast.LENGTH_SHORT).show();
 //            }
 //        });
+        if (LocationUtils.getActiveAlarmCount(getApplicationContext()) > 0) {
+            if (PermissionUtils.checkLocationPermissions(getApplicationContext())) {
+                LocationUtils.startLocationService(getApplicationContext());
+            } else {
+                Log.d(TAG, "onCreate: no perm");
+                //PermissionUtils.requestLocationPermissions(getApplicationContext());
+            }
+
+        }
     }
 
     private void firstLaunchTour() {

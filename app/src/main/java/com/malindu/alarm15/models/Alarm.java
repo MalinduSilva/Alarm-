@@ -62,6 +62,7 @@ public class Alarm implements Serializable, Comparable<Alarm> {
         alarm.setSnooze(Boolean.parseBoolean(alarmSplit[7]));
         alarm.setSet_for_date(Boolean.parseBoolean(alarmSplit[8]));
         alarm.setSet_for_weekdays(Boolean.parseBoolean(alarmSplit[9]));
+        Log.d("TAG", "getAlarmObj: "+ alarm);
         alarm.setSet_for_today(Boolean.parseBoolean(alarmSplit[10]));
         alarm.setSet_for_tomorrow(Boolean.parseBoolean(alarmSplit[11]));
         Log.d("Alarm", "getAlarmObj: parse successful - " + alarm.getStringObj() + "---" + str);

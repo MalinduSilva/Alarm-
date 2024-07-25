@@ -56,6 +56,7 @@
     <string name="dialog_permissions_title_second">If we say "Please" ?</string>
     <string name="dialog_permissions_title_third">Sadly, you have no other choice</string>
     <string name="dialog_permissions_message">Following permissions are required for using Alarm features</string>
+    <string name="dialog_permissions_message_location">Following permissions are required for using Location features</string>
     <string name="dialog_permissions_ok">Got it</string>
     <string name="dialog_permissions_cancel">Over my dead body!</string>
     <string name="dialog_alarm_delete_title">Confirm</string>
@@ -70,5 +71,16 @@
     <string name="label_range">Range :</string>
     <string name="label_meters">meters</string>
     <string name="hint_search">Search</string>
-    <string name="label_where_to">Where to...</string>
+    <string name="label_where_to">Where to…</string>
+
+    <!-- Add Location Alarm - Note -->
+    <string name="location_expand">Expand</string>
+    <string name="location_note_bold">Bold</string>
+    <string name="location_note_italic">Italic</string>
+    <string name="location_note_underline">Underline</string>
+    <string name="location_note_strikethrough">Strikethrough</string>
+    <string name="location_note_bullet">Bullets</string>
+    <string name="location_note">Note</string>
+    <string name="location_note_save">save</string>
+    <string name="location_note_discard">discard</string>
 </resources>

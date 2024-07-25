@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -50,9 +51,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,9 +65,12 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.LocationBias;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -74,6 +81,7 @@ import com.malindu.alarm15.adapters.PlacePredictionAdapter;
 import com.malindu.alarm15.models.LocationAlarm;
 import com.malindu.alarm15.models.geo.GeocodingResult;
 import com.malindu.alarm15.utils.Constants;
+import com.malindu.alarm15.utils.LocationUtils;
 import com.malindu.alarm15.utils.PermissionUtils;
 
 import org.json.JSONArray;
@@ -84,13 +92,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, LocationNoteDialog.OnNoteAddedListener {
     public static final String TAG = "LocationAddNewDialog";
     private SharedPreferences sharedPreferences;
     private boolean locationPermissionsGranted = false;
 
     // Map
     private GoogleMap mMap;
+    private Marker marker;
 
     // Current location
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -107,18 +116,39 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
     private ViewAnimator viewAnimator;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
-//    private PlacesAutoCompleteAdapter placesAutoCompleteAdapter;
-//    private GoogleApiClient googleApiClient;
+    private int retryCount = 0;
 
     // Widgets
     private RadioGroup radioGroupRange;
     private LinearLayout layoutRange;
     private AutoCompleteTextView searchTxt;
     private EditText txtRange;
-    private ImageView btnLocateMe;
+    private ImageView btnLocateMe, btnZoomIn, btnZoomOut;
     private Button btnDiscard, btnSave;
-    private LocationAlarm locationAlarm = new LocationAlarm();
+    private ImageButton btnAddNote;
+    private ImageView btnClear;
 
+    // Logical
+    private boolean placeClicked = false;
+    private LocationAlarm locationAlarm;
+
+    public interface OnLocationAddedListener {
+        void onLocationAdded();
+    }
+
+    private OnLocationAddedListener listener;
+
+    public void setOnLocationAddedListener(OnLocationAddedListener listener) {
+        this.listener = listener;
+    }
+
+    public static LocationAddNewDialog newInstance(LocationAlarm locationAlarm) {
+        LocationAddNewDialog dialog = new LocationAddNewDialog();
+        Bundle args = new Bundle();
+        args.putSerializable("location", locationAlarm);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
     @Nullable
     @Override
@@ -132,6 +162,10 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         btnLocateMe = view.findViewById(R.id.btnLocateMe);
         btnDiscard = view.findViewById(R.id.btn_discard);
         btnSave = view.findViewById(R.id.btn_save);
+        btnAddNote = view.findViewById(R.id.btn_add_note);
+        btnClear = view.findViewById(R.id.btn_clear);
+        btnZoomIn = view.findViewById(R.id.btnZoomIn);
+        btnZoomOut = view.findViewById(R.id.btnZoomOut);
         progressBar = view.findViewById(R.id.progress_bar);
         recyclerView = view.findViewById(R.id.recycler_view);
         placesClient = Places.createClient(requireContext());
@@ -178,8 +212,53 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locationAlarm.setRange(Integer.parseInt(txtRange.getText().toString()));
-                locationAlarm.set();
+                if (locationAlarm.isExact() || (!locationAlarm.isExact() && txtRange.getText().toString().isEmpty())) {
+                    // If the alarm is set to exact or alarm is set to proximity but range is not set
+                    locationAlarm.setRange(Constants.DEFAULT_RANGE);
+                } else {
+                    locationAlarm.setRange(Integer.parseInt(txtRange.getText().toString()));
+                }
+                locationAlarm.setTurnedOn(true);
+                if (getArguments() == null) {
+                    locationAlarm.setLocationAlarmID(Constants.LOCATION_ALARM_KEY + System.currentTimeMillis());
+                }
+                LocationUtils.setLocationAlarm(requireContext(), locationAlarm);
+                if (listener != null) {
+                    listener.onLocationAdded();
+                }
+                getDialog().dismiss();
+            }
+        });
+
+        btnAddNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getArguments() != null && getArguments().containsKey("location")) {
+                    LocationNoteDialog dialog = LocationNoteDialog.newInstance(locationAlarm.getNote_title(), locationAlarm.getNote());
+                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
+                    dialog.setCancelable(false);
+                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
+                    dialog.show(getParentFragmentManager(), LocationNoteDialog.TAG);
+                } else {
+                    LocationNoteDialog dialog = new LocationNoteDialog();
+                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
+                    dialog.setCancelable(false);
+                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
+                    dialog.show(getFragmentManager(), LocationNoteDialog.TAG);
+                }
+            }
+        });
+
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnClear.setVisibility(View.GONE);
+                placeClicked = false;
+                searchTxt.setText("");
+                if (marker != null) {
+                    marker.remove();
+                    marker = null;
+                }
             }
         });
 
@@ -192,16 +271,23 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.d(TAG, "onTextChanged: " + s.toString() + ", " + start + ", " + before + ", " + count);
-                progressBar.setIndeterminate(true);
-                progressBar.setVisibility(View.VISIBLE);
-                recyclerView.setVisibility(View.VISIBLE);
-                handler.removeCallbacksAndMessages(null);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getPlacePredictions(s.toString());
+                if (count == 0) {
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    if (!placeClicked) {
+                        btnClear.setVisibility(View.GONE);
+                        progressBar.setIndeterminate(true);
+                        progressBar.setVisibility(View.VISIBLE);
+                        //recyclerView.setVisibility(View.VISIBLE);
+                        handler.removeCallbacksAndMessages(null);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getPlacePredictions(s.toString());
+                            }
+                        }, 300);
                     }
-                }, 300);
+                }
             }
 
             @Override
@@ -317,8 +403,22 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: Found location");
                             currentLocation = (Location) task.getResult();
-                            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                            moveCamera(latLng, Constants.DEFAULT_MAP_ZOOM, "My Location");
+                            if (currentLocation != null) {
+                                retryCount = 0;
+                                LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                                if (getArguments() == null) { // to skip this step when opening an existing location alarm
+                                    moveCamera(latLng, Constants.DEFAULT_MAP_ZOOM, "My Location");
+                                }
+                            } else {
+                                if (retryCount < Constants.MAX_RETRY_COUNT) {
+                                    getDeviceLocation();
+                                } else {
+                                    Log.d(TAG, "onComplete: exceeding max attempts on getting device location");
+                                    Toast.makeText(requireContext(), "Please restart the app", Toast.LENGTH_LONG).show();
+                                    getDialog().dismiss();
+                                }
+                                retryCount++;
+                            }
                         } else {
                             Log.d(TAG, "onComplete: last location is null");
                             Toast.makeText(getContext(), "Unable to get location", Toast.LENGTH_LONG).show();
@@ -330,14 +430,15 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             Log.d(TAG, "getDeviceLocation: SecurityException : " + e.getMessage());
         }
     }
-    
+
     private void moveCamera(LatLng latLng, float zoom, String title) {
-        Log.d(TAG, "moveCamera: moving the camera to - lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        Log.d(TAG, "moveCamera: moving the camera to - "+ title+" lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
         if (!title.equals("My Location")) {
+            if (marker != null) { marker.remove(); marker = null; }
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(title);
-            mMap.addMarker(markerOptions);
+            marker = mMap.addMarker(markerOptions);
         }
         hideSoftKeyboard();
     }
@@ -355,7 +456,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE ||
-                    event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER) {
+                        event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER) {
                     //editTextSearch.setText(editTextSearch.getText().subSequence(0, editTextSearch.getText().length()));
                     //editTextSearch.setSelection(editTextSearch.getText().length());
                     searchTxt.setCursorVisible(false);
@@ -379,8 +480,39 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             }
         });
         //hideSoftKeyboard();
+        mMap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
+            @Override
+            public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
+                Log.d(TAG, "onPoiClick: " + pointOfInterest.name);
+                locationAlarm.setLatLng(pointOfInterest.latLng);
+                placeClicked = true;
+                searchTxt.setText(pointOfInterest.name);
+                btnClear.setVisibility(View.VISIBLE);
+                moveCamera(pointOfInterest.latLng, Constants.DEFAULT_MAP_ZOOM, pointOfInterest.name);
+            }
+        });
+        btnZoomIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom + Constants.DEFAULT_MAP_ZOOM_ADJUST));
+            }
+        });
+        btnZoomOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom - Constants.DEFAULT_MAP_ZOOM_ADJUST));
+            }
+        });
+        if (getArguments() != null && getArguments().containsKey("location")) {
+            locationAlarm = (LocationAlarm) getArguments().getSerializable("location");
+            populateFieldsWithExistingData();
+        } else {
+            locationAlarm = new LocationAlarm();
+        }
     }
-    
+
     private void geoLocate() {
         Log.d(TAG, "geoLocate: geolocating");
         String searchString = searchTxt.getText().toString();
@@ -425,6 +557,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         placePredictionAdapter.setPlaceClickListener(new PlacePredictionAdapter.OnPlaceClickListener() {
             @Override
             public void onPlaceClicked(AutocompletePrediction place) {
+                placeClicked = true;
                 geocodePlaceAndDisplay(place);
             }
         });
@@ -433,8 +566,8 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
     private void getPlacePredictions(String query) {
         LocationBias bias;
         if (currentLocation != null) {
-            LatLng southwest = new LatLng(currentLocation.getLatitude()-1, currentLocation.getLongitude()-1);
-            LatLng northeast = new LatLng(currentLocation.getLatitude()+1, currentLocation.getLongitude()+1);
+            LatLng southwest = new LatLng(currentLocation.getLatitude() - 1, currentLocation.getLongitude() - 1);
+            LatLng northeast = new LatLng(currentLocation.getLatitude() + 1, currentLocation.getLongitude() + 1);
             bias = RectangularBounds.newInstance(southwest, northeast);
         } else {
             bias = RectangularBounds.newInstance(LAT_LNG_BOUNDS_DEFAULT);
@@ -456,6 +589,8 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
                 placePredictionAdapter.setPredictions(predictions);
                 progressBar.setIndeterminate(false);
                 progressBar.setVisibility(View.GONE);
+                btnClear.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.VISIBLE);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -486,8 +621,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
                         }
 
                         // Use Gson to convert the response JSON object to a POJO
-                        GeocodingResult result = gson.fromJson(
-                                results.getString(0), GeocodingResult.class);
+                        GeocodingResult result = gson.fromJson(results.getString(0), GeocodingResult.class);
                         displayDialog(placePrediction, result);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -498,12 +632,70 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         queue.add(request);
         recyclerView.setVisibility(View.GONE);
     }
+    private void reverseGeocode(LatLng latLng) {
+        Log.d(TAG, "reverseGeocode: ");
+        final String apiKey = BuildConfig.MAPS_API_KEY;
+        final String lat_lng = latLng.latitude + "," + latLng.longitude;
+        final String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s&key=%s";
+        final String requestURL = String.format(url, lat_lng, apiKey);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestURL, null,
+                response -> {
+                    try {
+                        JSONArray results = response.getJSONArray("results");
+                        if (results.length() == 0) {
+                            Log.d(TAG, "reverseGeocode: no results");
+                            return;
+                        }
+                        GeocodingResult result = gson.fromJson(results.getString(0), GeocodingResult.class);
+                        moveCamera(new LatLng(result.geometry.location.latitude, result.geometry.location.longitude), Constants.DEFAULT_MAP_ZOOM, "asd");
+                    } catch (JSONException e) { e.printStackTrace(); }
+                },
+                error -> {Log.d(TAG, "reverseGeocode: failed");
+        });
+        queue.add(request);
+    }
 
     private void displayDialog(AutocompletePrediction place, GeocodingResult result) {
         Log.d("RESULTS", place.getPrimaryText(null).toString() + " : " + result.geometry.location);
         Log.d("RESULTS", place.toString());
+        searchTxt.setText(place.getPrimaryText(null));
+        searchTxt.setCursorVisible(false);
+        recyclerView.setVisibility(View.GONE);
         moveCamera(new LatLng(result.geometry.location.latitude, result.geometry.location.longitude), Constants.DEFAULT_MAP_ZOOM, place.getPrimaryText(null).toString());
         locationAlarm.setLatLng(new LatLng(result.geometry.location.latitude, result.geometry.location.longitude));
+        locationAlarm.setTitle(place.getPrimaryText(null).toString());
+        locationAlarm.setAddress(place.getSecondaryText(null).toString());
+    }
+
+    @Override
+    public void onNoteAdded(String title, String note) {
+        locationAlarm.setNote_title(title);
+        locationAlarm.setNote(note);
+    }
+
+    private void populateFieldsWithExistingData() {
+        radioGroupRange.check(locationAlarm.isExact() ? R.id.radioButtonExact : R.id.radioButtonProximity);
+        txtRange.setText(String.valueOf(locationAlarm.getRange()));
+        placeClicked = true;
+        searchTxt.setText(locationAlarm.getTitle());
+        recyclerView.setVisibility(View.GONE);
+        moveCamera(locationAlarm.getLatLng(), Constants.DEFAULT_MAP_ZOOM, locationAlarm.getTitle());
+    }
+
+    private void onClickMap(LatLng latLng) {
+        if (marker != null) { marker.remove(); marker = null; }
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS));
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        placesClient.findCurrentPlace(request)
+                .addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
+                    @Override
+                    public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
+                        Place place = findCurrentPlaceResponse.getPlaceLikelihoods().get(0).getPlace();
+                        moveCamera(latLng, Constants.DEFAULT_MAP_ZOOM, place.getName());
+                    }
+                });
     }
 //
 //    @Override

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LocationFragment">
+    tools:context=".ui.LocationFragment"
+    android:id="@+id/layout_location_fragment">
 
     <TextView
         android:id="@+id/label_location"
@@ -14,10 +15,33 @@
         android:layout_marginStart="10dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/alarm_list_recview"
+        android:id="@+id/location_list_recview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/label_location"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_location"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="false"/>
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@id/label_location"-->
+<!--        android:scrollbars="none">-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/location_list_recview"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_below="@id/label_location"-->
+<!--                android:nestedScrollingEnabled="false"/>-->
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="100dp"/>-->
+<!--        </LinearLayout>-->
+<!--    </ScrollView>-->
 
 <!--    <TextClock-->
 <!--        android:id="@+id/clock"-->
@@ -35,5 +59,12 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:contentDescription="@string/hint_add_location_alarm"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/test"
+        android:text="Delete all"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

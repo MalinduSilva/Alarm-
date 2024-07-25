@@ -1,21 +1,28 @@
 package com.malindu.alarm15.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.malindu.alarm15.R;
 import com.malindu.alarm15.ui.AlarmFragment;
+import com.malindu.alarm15.ui.LocationFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class PermissionUtils {
+    private static final String TAG = "PermissionUtils";
 
     // Method to check if all required permissions are granted
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -81,5 +88,41 @@ public class PermissionUtils {
         if (!permissionsToRequest.isEmpty()) {
             fragment.requestPermissions(permissionsToRequest.toArray(new String[0]), Constants.PERMISSION_REQUEST_CODE);
         }
+    }
+
+    public static void requestLocationPermissions(Context context) {
+        List<String> permissionList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION); }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION); }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.INTERNET); }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.ACCESS_NETWORK_STATE); }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.FOREGROUND_SERVICE); }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE_LOCATION) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION); }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) { permissionList.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION); }
+        if (!permissionList.isEmpty()) {
+            new MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.dialog_permissions_title_first)
+                    .setMessage(R.string.dialog_permissions_message_location)
+                    .setPositiveButton(R.string.dialog_permissions_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            LocationFragment fragment = LocationFragment.newInstance();
+                            fragment.requestPermissions(permissionList.toArray(new String[0]), Constants.PERMISSION_REQUEST_CODE_LOCATION);
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
+    }
+
+    public static boolean checkLocationPermissions(Context context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE_LOCATION) != PackageManager.PERMISSION_GRANTED) { return false; }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) { return false; }
+        return true;
     }
 }

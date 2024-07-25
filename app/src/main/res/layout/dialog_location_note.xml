@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.9">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp">
+
+            <EditText
+                android:id="@+id/note_title"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_toStartOf="@id/btn_show_desc"
+                android:autofillHints="Title"
+                android:inputType="text"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:background="@color/transparent"
+                android:layout_marginBottom="10dp"/>
+
+            <ImageButton
+                android:id="@+id/btn_show_desc"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_above="@id/divider1"
+                android:background="@color/transparent"
+                android:contentDescription="@string/location_expand"
+                android:src="@drawable/icon_arrow_down" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/note_desc"
+                android:labelFor="@id/note_desc"
+                android:layout_marginEnd="24dp"/>
+
+            <EditText
+                android:id="@+id/note_desc"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_above="@id/divider2"
+                android:layout_below="@id/note_title"
+                android:autofillHints="Note"
+                android:gravity="top"
+                android:padding="10dp"
+                android:background="@color/transparent"
+                android:inputType="textMultiLine" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/layout_format"/>
+
+            <LinearLayout
+                android:id="@+id/layout_format"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white_10">
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_bold"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_format_bold" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_italic"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_format_italic" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_underline"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_format_underlined" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_strikethrough"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_format_strikethrough" />
+
+                <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_bullet"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_format_list_bulleted" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"/>
+
+                <ImageButton
+                    android:id="@+id/btn_note_discard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_discard"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_close"
+                    android:layout_marginEnd="15dp"/>
+                <ImageButton
+                    android:id="@+id/btn_note_save"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/location_note_save"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/icon_tick"
+                    android:layout_marginEnd="5dp"/>
+
+            </LinearLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+<!--    <androidx.constraintlayout.widget.Guideline-->
+<!--        android:id="@+id/guidelineTop"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintGuide_begin="537dp" />-->
+
+<!--    <androidx.constraintlayout.widget.Guideline-->
+<!--        android:id="@+id/guidelineBot"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintGuide_begin="565dp" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

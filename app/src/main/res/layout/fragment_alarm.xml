@@ -15,26 +15,35 @@
         android:textSize="40sp"
         android:layout_marginStart="10dp"/>
 
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/alarm_list_recview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/title_alarm"
-        android:scrollbars="none">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/alarm_list_recview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/title_alarm"
-                android:nestedScrollingEnabled="false"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"/>
-        </LinearLayout>
-    </ScrollView>
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"
+        android:nestedScrollingEnabled="false"/>
+
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@id/title_alarm"-->
+<!--        android:scrollbars="none">-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical">-->
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/alarm_list_recview"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_below="@id/title_alarm"-->
+<!--                android:nestedScrollingEnabled="false"/>-->
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="100dp"/>-->
+<!--        </LinearLayout>-->
+<!--    </ScrollView>-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"

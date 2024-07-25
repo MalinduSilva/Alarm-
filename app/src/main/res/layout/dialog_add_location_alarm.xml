@@ -13,7 +13,18 @@
         android:text="@string/label_add_alarm"
         android:textSize="40sp"
         android:layout_marginHorizontal="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginVertical="10dp"/>
+
+    <ImageButton
+        android:id="@+id/btn_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/location_note"
+        android:src="@drawable/icon_note_add"
+        android:background="@color/transparent"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="10dp"/>
 
     <fragment
         android:id="@+id/mapView"
@@ -45,6 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@id/icon_magnify"
+            android:layout_toStartOf="@id/btn_clear"
             android:paddingHorizontal="10dp"
             android:autofillHints="Enter location"
             android:hint="@string/hint_search"
@@ -61,12 +73,22 @@
             android:layout_marginEnd="-5dp"
             android:visibility="gone"/>
         <!-- style="@style/Widget.AppCompat.ProgressBar.Horizontal"   -->
+        <ImageView
+            android:id="@+id/btn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_close"
+            android:layout_alignParentEnd="true"
+            android:layout_marginVertical="10dp"
+            android:layout_marginEnd="-5dp"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_above="@id/layout_sensitivity"
         android:layout_below="@id/layout_searchbar"
         android:layout_marginHorizontal="10dp"
         android:background="@drawable/background_location_searchbar"

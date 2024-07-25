@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/btnDeleteLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/icon_delete"
+        style="?attr/materialIconButtonStyle"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="5dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginHorizontal="5dp"
+        android:elevation="10dp"
+        android:theme="@style/AppTheme"
+        android:backgroundTint="@color/white"
+        app:cardCornerRadius="10dp"
+        app:strokeColor="@color/md_theme_primary"
+        android:id="@+id/cardview_location_alarm_item_parent"
+        android:layout_toEndOf="@id/btnDeleteLocation">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/location_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:textSize="25sp"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="25sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Navro Restuarant"/>
+
+            <ImageView
+                android:id="@+id/icon_address"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_location_outlined"
+                app:layout_constraintTop_toBottomOf="@id/location_title"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:id="@+id/txt_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/location_title"
+                app:layout_constraintStart_toEndOf="@id/icon_address"
+                app:layout_constraintEnd_toStartOf="@id/switch_on"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:textStyle="italic"
+                android:text="Sri Gunarathana Road, Panadura"/>
+
+            <ImageView
+                android:id="@+id/icon_range"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_arrow_range"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_address"
+                android:layout_marginHorizontal="10dp"/>
+            <TextView
+                android:id="@+id/txt_range"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/txt_address"
+                app:layout_constraintStart_toEndOf="@id/icon_range"
+                app:layout_constraintEnd_toStartOf="@id/switch_on"
+                android:layout_marginStart="5dp"
+                android:textStyle="italic"
+                android:text="1000m"/>
+
+            <LinearLayout
+                android:id="@+id/layout_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/switch_on"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginHorizontal="5dp"
+                android:padding="5dp"
+                android:background="@drawable/background_location_searchbar">
+                <ImageView
+                    android:id="@+id/icon_note"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/icon_note"/>
+                <TextView
+                    android:id="@+id/txt_note"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:textSize="15sp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:text="Buy cake"/>
+                <ImageView
+                    android:id="@+id/icon_arrow_down"
+                    android:layout_width="24dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="end"
+                    android:src="@drawable/icon_arrow_down"/>
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/location_title"
+                android:layout_marginEnd="10dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>
