@@ -51,6 +51,7 @@ public class Constants {
      * Channel ID for the notification channel for sending alarm notifications
      */
     public static final String CHANNEL_ID_ALARM = "alarm_channel";
+    public static final String CHANNEL_NAME_ALARM = "Alarm Notifications";
 
 
     /**
@@ -86,10 +87,15 @@ public class Constants {
         return list;
     }
 
+    public static final String ACTION_START_ALARM_SERVICE = "com.malindu.alarm15.ACTION_START_ALARM_SERVICE";
     public static final String ACTION_SNOOZE = "com.malindu.alarm15.ACTION_SNOOZE";
     public static final String ACTION_DISMISS = "com.malindu.alarm15.ACTION_DISMISS";
     public static final String ACTION_START_ALARM = "com.malindu.alarm15.ACTION_START_ALARM";
     public static final String ACTION_STOP_ALARM = "com.malindu.alarm15.ACTION_STOP_ALARM";
+    public static final String ACTION_SNOOZED_ALARM = "com.malindu.alarm15.ACTION_SNOOZED_ALARM";
+    public static final String ACTION_SILENCE_ALARM = "com.malindu.alarm15.ACTION_SILENCE_ALARM";
+
+    public static final int DEFAULT_SNOOZE_TIME = 5 * 60 * 1000;
 
     /**
      * Default zoom level for the Google Map in {@link com.malindu.alarm15.ui.LocationAddNewDialog}
@@ -127,9 +133,9 @@ public class Constants {
      * Having this action set in the intent can help the service to identify if a new alarm is added, and can update itself accordingly.
      * Currently not used in the app, hence //TODO
      */
-    public static final String ACTION_NEW_LOCATION_ALARM = "ACTION_NEW_LOCATION_ALARM";
-    public static final String ACTION_CANCEL_LOCATION_ALARM = "ACTION_NEW_LOCATION_ALARM";
-    public static final String ACTION_START_LOCATION_SERVICE = "ACTION_START_LOCATION_SERVICE";
+    public static final String ACTION_NEW_LOCATION_ALARM = "com.malindu.alarm15.ACTION_NEW_LOCATION_ALARM";
+    public static final String ACTION_CANCEL_LOCATION_ALARM = "com.malindu.alarm15.ACTION_NEW_LOCATION_ALARM";
+    public static final String ACTION_START_LOCATION_SERVICE = "com.malindu.alarm15.ACTION_START_LOCATION_SERVICE";
 
 
     /**
@@ -149,4 +155,9 @@ public class Constants {
      * But the user can change it in settings. //TODO
      */
     public static int DEFAULT_RANGE_EXACT = 100;
+
+    public static final String DISPLAY_RIGHT_EDGE_KEY = "DISPLAY_RIGHT_EDGE";
+    public static final String DISPLAY_BOTTOM_EDGE_KEY = "DISPLAY_BOTTOM_EDGE";
+
+    public static final String WORLD_CLOCK_ITEM_KEY = "WC_";
 }

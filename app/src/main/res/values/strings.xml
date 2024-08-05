@@ -38,6 +38,9 @@
     <string name="label_saturday">S</string>
     <string name="label_sunday">S</string>
     <string name="dummy_add_alarm_text">Tomorrow-Sat,27 Apr</string>
+    <string name="sound_select_title">Select alarm sound</string>
+    <string name="vibrate_select_title">Select vibrate pattern</string>
+    <string name="ok">OK</string>
 
     <!-- Accessibility hints (Content Descriptions)   -->
     <string name="hint_add_alarm">Add Alarm</string>
@@ -83,4 +86,26 @@
     <string name="location_note">Note</string>
     <string name="location_note_save">save</string>
     <string name="location_note_discard">discard</string>
+
+    <!-- AlarmService -->
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
+
+    <!-- Alarm full screen ring activity -->
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="label_monday_short">Mon</string>
+    <string name="label_tuesday_short">Tue</string>
+    <string name="label_wednesday_short">Wed</string>
+    <string name="label_thursday_short">Thu</string>
+    <string name="label_friday_short">Fri</string>
+    <string name="label_saturday_short">Sat</string>
+    <string name="label_sunday_short">Sun</string>
+
+    <!-- Clock Fragment   -->
+    <string name="worldclock_add_title">Select region</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="toast_city_exists">Already selected!</string>
+    <string name="add_city">Add city</string>
 </resources>

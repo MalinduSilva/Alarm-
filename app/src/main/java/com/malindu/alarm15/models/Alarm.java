@@ -1,8 +1,13 @@
 package com.malindu.alarm15.models;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.text.format.DateFormat;
 import android.util.Log;
+
+import com.malindu.alarm15.utils.AlarmUtils;
+import com.malindu.alarm15.utils.Constants;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -17,9 +22,12 @@ public class Alarm implements Serializable, Comparable<Alarm> {
     private boolean[] weekdays = new boolean[7];
     private boolean sound = true;
     private boolean vibration = true;
-    private boolean snooze = false;
+    private boolean snooze = true;
     private boolean set_for_date = false; private boolean set_for_weekdays = false;
     private boolean set_for_today = false; private boolean set_for_tomorrow = true;
+    private AlarmSoundItem alarmSound;
+    private float alarmVolume = 0.5f;
+    private VibratePattern vibratePattern = VibratePattern.PATTERN_ONE;
 
     public Alarm() {
         for (int i = 0; i <7; i++) {
@@ -40,7 +48,8 @@ public class Alarm implements Serializable, Comparable<Alarm> {
      */
     public String getStringObj() {
         return "Alarm{" + alarmID + "|" + alarmLabel + "|" + isTurnedOn + "|" + alarmTime.getTimeInMillis() + "|" + Arrays.toString(weekdays) + "|" +
-                sound + "|" + vibration + "|" + snooze + "|" + set_for_date + "|" + set_for_weekdays + "|" + set_for_today + "|" + set_for_tomorrow + "}";
+                sound + "|" + vibration + "|" + snooze + "|" + set_for_date + "|" + set_for_weekdays + "|" + set_for_today + "|" + set_for_tomorrow + "|" +
+                alarmSound.getTitle() + "|" + alarmSound.getUri() + "|" + alarmVolume + "|" + vibratePattern + "}";
     }
     public static Alarm getAlarmObj(String str) {
         Alarm alarm = new Alarm();
@@ -62,11 +71,25 @@ public class Alarm implements Serializable, Comparable<Alarm> {
         alarm.setSnooze(Boolean.parseBoolean(alarmSplit[7]));
         alarm.setSet_for_date(Boolean.parseBoolean(alarmSplit[8]));
         alarm.setSet_for_weekdays(Boolean.parseBoolean(alarmSplit[9]));
-        Log.d("TAG", "getAlarmObj: "+ alarm);
+        //Log.d("TAG", "getAlarmObj: "+ alarm);
         alarm.setSet_for_today(Boolean.parseBoolean(alarmSplit[10]));
         alarm.setSet_for_tomorrow(Boolean.parseBoolean(alarmSplit[11]));
-        Log.d("Alarm", "getAlarmObj: parse successful - " + alarm.getStringObj() + "---" + str);
+        alarm.setAlarmSound(new AlarmSoundItem(alarmSplit[12], Uri.parse(alarmSplit[13])));
+        alarm.setAlarmVolume(Float.parseFloat(alarmSplit[14]));
+        alarm.setVibratePattern(VibratePattern.valueOf(alarmSplit[15]));
+        //Log.d("Alarm", "getAlarmObj: parse successful - " + alarm.getStringObj() + "---" + str);
         return alarm;
+    }
+
+    public static Alarm getSnoozedAlarm(Context context, Alarm alarm) {
+        SharedPreferences sp = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(alarm.getAlarmTime().getTimeInMillis() + sp.getInt("DEFAULT_SNOOZE_TIME", Constants.DEFAULT_SNOOZE_TIME));
+        alarm.setAlarmTime(c);
+        if (!alarm.isSet_for_weekdays()) {
+            AlarmUtils.saveAlarm(context, alarm, false);
+        }
+        return  alarm;
     }
 
     public static String getAlarmTimeAsText(Context context, Alarm alarm) {
@@ -287,4 +310,11 @@ public class Alarm implements Serializable, Comparable<Alarm> {
     public int compareTo(Alarm other) {
         return Long.compare(this.alarmTime.getTimeInMillis(), other.alarmTime.getTimeInMillis());
     }
+
+    public AlarmSoundItem getAlarmSound() { return alarmSound; }
+    public void setAlarmSound(AlarmSoundItem alarmSound) { this.alarmSound = alarmSound; }
+    public float getAlarmVolume() { return alarmVolume; }
+    public void setAlarmVolume(float alarmVolume) { this.alarmVolume = alarmVolume; }
+    public VibratePattern getVibratePattern() { return vibratePattern; }
+    public void setVibratePattern(VibratePattern vibratePattern) { this.vibratePattern = vibratePattern; }
 }

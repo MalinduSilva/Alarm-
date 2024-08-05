@@ -1,27 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fullscreenmain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_dark"
-    android:padding="16dp"
-    android:id="@+id/fullscreenmain">
+    android:background="@color/md_theme_onPrimaryFixed">
 
-    <TextView
-        android:id="@+id/alarmMessage"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Alarm! Wake up!"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.15"/>
 
-    <Button
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guide1"
+        android:layout_marginStart="30dp">
+
+        <TextView
+            android:id="@+id/alarmLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm"
+            android:textColor="@color/white_75"
+            android:textSize="35sp" />
+
+        <LinearLayout
+            android:id="@+id/layout_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/alarmLabel"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/alarmHour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09"
+                android:textColor="@color/white_75"
+                android:textSize="60sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textColor="@color/white_75"
+                android:textSize="60sp" />
+
+            <TextView
+                android:id="@+id/alarmMinute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="45"
+                android:textColor="@color/white_75"
+                android:textSize="60sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" "
+                android:textColor="@color/white_75"
+                android:textSize="60sp" />
+
+            <TextView
+                android:id="@+id/alarmAmpm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AM"
+                android:textColor="@color/white_75"
+                android:textSize="60sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_time"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/alarmDayOfWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wed"
+                android:textColor="@color/white_75"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=", "
+                android:textColor="@color/white_75"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/alarmDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="31"
+                android:textColor="@color/white_75"
+                android:textSize="30sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" "
+                android:textColor="@color/white_75"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/alarmMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="July"
+                android:textColor="@color/white_75"
+                android:textSize="30sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!--    <Button-->
+    <!--        android:id="@+id/dismissButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/alarmMessage"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_marginTop="20dp"-->
+    <!--        style="?attr/materialIconButtonStyle"-->
+    <!--        app:icon="@drawable/icon_tick"-->
+    <!--        android:background="@drawable/background_alarm_dismiss_button"/>-->
+
+    <ImageButton
+        android:id="@+id/dismissButtonShade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/background_alarm_dismiss_button"
+        android:backgroundTint="@color/md_theme_error"
+        app:layout_constraintStart_toStartOf="@id/dismissButton"
+        app:layout_constraintEnd_toEndOf="@id/dismissButton"
+        app:layout_constraintTop_toTopOf="@id/dismissButton"
+        app:layout_constraintBottom_toBottomOf="@id/dismissButton"/>
+
+    <ImageButton
         android:id="@+id/dismissButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dismiss"
-        android:layout_below="@id/alarmMessage"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
-</RelativeLayout>
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/background_alarm_dismiss_button"
+        android:backgroundTint="@color/md_theme_error"
+        android:src="@drawable/icon_close"
+        app:layout_constraintBottom_toTopOf="@id/snoozeButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/snoozeButton"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="10dp"
+        android:text="Snooze"
+        android:textColor="@color/white_75"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,147 +25,269 @@
         android:layout_centerHorizontal="true"
         android:layout_marginHorizontal="10dp"/>
 
-    <LinearLayout
-        android:id="@+id/layout_alarm_frequency"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/freq_cardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/time_picker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/txt_alarm_frequency"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/dummy_add_alarm_text"
-            android:layout_marginHorizontal="10dp"
-            android:layout_weight="6"
-            android:textSize="17sp"/>
-        <Button
-            android:id="@+id/btn_calendar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:icon="@drawable/icon_calendar"
-            style="@style/Widget.Material3.Button.IconButton.Outlined"
-            android:layout_marginHorizontal="10dp"
-            android:background="@drawable/background_button_add_alarm"/>
-        <!-- @style/Widget.App.Button.OutlinedButton.IconOnly-->
-    </LinearLayout>
-
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroup_week"
-        android:layout_below="@id/layout_alarm_frequency"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:singleLine="true"
-        app:singleSelection="false"
-        app:chipSpacingHorizontal="0dp"
         android:layout_marginHorizontal="10dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/layout_alarm_frequency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/txt_alarm_frequency"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dummy_add_alarm_text"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="6"
+                    android:textSize="17sp"/>
+                <Button
+                    android:id="@+id/btn_calendar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:icon="@drawable/icon_calendar"
+                    style="@style/Widget.Material3.Button.IconButton.Outlined"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="@drawable/background_button_add_alarm"/>
+                <!-- @style/Widget.App.Button.OutlinedButton.IconOnly-->
+            </LinearLayout>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup_week"
+                android:layout_below="@id/layout_alarm_frequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="false"
+                app:chipSpacingHorizontal="0dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_centerHorizontal="true">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_monday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_monday"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_tuesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_tuesday"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_wednesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_wednesday"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_thursday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_thursday"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_friday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_friday"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_saturday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_saturday"
-            android:textColor="@color/ash"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_sunday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_sunday"
-            android:textColor="#ff0000"
-            app:chipStrokeColor="@color/ash_border"
-            android:checkable="true"/>
-        <!--com.google.android.material.chip.Chip
-            android:id="@+id/chip_calendar"
-            android:layout_below="@id/time_picker"
-            android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:chipIcon="@drawable/icon_calendar"
-            android:layout_marginHorizontal="10dp"
-            android:text="       "
-            android:textColor="@color/black"
-            style="?attr/materialIconButtonStyle"/-->
-    </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_monday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_monday"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_tuesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_tuesday"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_wednesday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_wednesday"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_thursday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_thursday"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_friday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_friday"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_saturday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_saturday"
+                    android:textColor="@color/ash"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_sunday"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_sunday"
+                    android:textColor="#ff0000"
+                    app:chipStrokeColor="@color/ash_border"
+                    android:checkable="true"/>
+                <!--com.google.android.material.chip.Chip
+                    android:id="@+id/chip_calendar"
+                    android:layout_below="@id/time_picker"
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipIcon="@drawable/icon_calendar"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="       "
+                    android:textColor="@color/black"
+                    style="?attr/materialIconButtonStyle"/-->
+            </com.google.android.material.chip.ChipGroup>
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <EditText
         android:id="@+id/txt_alarm_label"
-        android:layout_below="@id/chipGroup_week"
+        android:layout_below="@id/freq_cardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/label_add_alarm_name"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="20dp"
         android:inputType="text"
         android:importantForAutofill="no"/>
 
+    <LinearLayout
+        android:id="@+id/layout_sound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt_alarm_label"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/layout_sound_selection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_sound"
+                android:textSize="20sp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txt_alarm_sound"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_sound"
+                android:textSize="15sp"/>
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_vibrate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_sound"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/layout_vibrate_selection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_vibrate"
+                android:textSize="20sp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txt_vibrate_pattern"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_vibrate"
+                android:textSize="15sp"/>
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_vibration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_snooze"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_vibrate"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/layout_snooze_selection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_snooze"
+                android:textSize="20sp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txt_snooze_pattern"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_add_alarm_snooze"
+                android:textSize="15sp"/>
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_snooze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"/>
+    </LinearLayout>
+
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switch_sound"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/label_add_alarm_sound"
         android:textSize="20sp"
         android:layout_below="@id/txt_alarm_label"
-        android:layout_marginHorizontal="10dp"/>
+        android:layout_marginHorizontal="10dp"
+        android:visibility="gone"/>
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switch_vibration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/label_add_alarm_vibrate"
         android:textSize="20sp"
-        android:layout_below="@id/switch_sound"
-        android:layout_marginHorizontal="10dp"/>
+        android:layout_below="@id/layout_sound"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/>
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switch_snooze"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:checked="false"
+        android:checked="true"
         android:text="@string/label_add_alarm_snooze"
         android:textSize="20sp"
-        android:layout_below="@id/switch_vibration"
-        android:layout_marginHorizontal="10dp"/>
+        android:layout_below="@id/layout_vibrate"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -44,6 +44,7 @@ dependencies {
     //implementation(libs.play.services)
     implementation(libs.places)
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+    implementation(libs.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

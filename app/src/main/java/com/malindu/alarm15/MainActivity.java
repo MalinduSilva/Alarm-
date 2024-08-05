@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationBarView;
+import com.malindu.alarm15.models.WorldClockItem;
 import com.malindu.alarm15.ui.AlarmFragment;
 import com.malindu.alarm15.ui.ClockFragment;
 import com.malindu.alarm15.ui.LocationFragment;
@@ -38,6 +41,7 @@ import com.malindu.alarm15.utils.PermissionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -62,6 +66,20 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
         setTheme(R.style.AppTheme);
+        View rootview = findViewById(R.id.main);
+        rootview.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                rootview.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int[] location = new int[2];
+                rootview.getLocationOnScreen(location);
+                SharedPreferences sp = getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putInt(Constants.DISPLAY_RIGHT_EDGE_KEY, rootview.getWidth());
+                editor.putInt(Constants.DISPLAY_BOTTOM_EDGE_KEY, rootview.getHeight());
+                editor.apply();
+            }
+        });
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, MODE_PRIVATE);
         if (sharedPreferences.getBoolean(Constants.ALARM_PREFERENCES_KEY_FIRST_LAUNCH_APP, true)) {
             //firstLaunchTour();

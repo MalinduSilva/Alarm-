@@ -1,17 +1,26 @@
 package com.malindu.alarm15.utils;
 
 import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.malindu.alarm15.models.Alarm;
+import com.malindu.alarm15.models.AlarmSoundItem;
+import com.malindu.alarm15.models.VibratePattern;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AlarmUtils {
@@ -129,5 +138,58 @@ public class AlarmUtils {
 //        String timeLeftStr = years + " years, " + days + " days, " + hours + " hours, " + minutes + " minutes, " + seconds + " seconds left";
 //        Toast.makeText(context, timeLeftStr, Toast.LENGTH_LONG).show();
 //        Log.d(TAG, "showToast: " + timeLeftStr + ":" + time +":"+ System.currentTimeMillis());
+    }
+
+    public static void createFGSNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    Constants.CHANNEL_ID_ALARM,
+                    Constants.CHANNEL_NAME_ALARM,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setVibrationPattern(new long []{ 1000 , 1000 , 1000 , 1000 , 1000 });
+            channel.setSound(null, null);
+            channel.enableVibration(false);
+            channel.setBypassDnd(true);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public static List<AlarmSoundItem> getAvailableAlarmSounds(Context context) {
+        List<AlarmSoundItem> alarmSoundList = new ArrayList<>();
+
+        RingtoneManager ringtoneManager = new RingtoneManager(context);
+        ringtoneManager.setType(RingtoneManager.TYPE_ALARM);
+        Cursor cursor = ringtoneManager.getCursor();
+
+        while (cursor.moveToNext()) {
+            String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
+            Uri alarmSoundUri = ringtoneManager.getRingtoneUri(cursor.getPosition());
+
+            alarmSoundList.add(new AlarmSoundItem(title, alarmSoundUri));
+        }
+        cursor.close();
+        return alarmSoundList;
+    }
+
+    public static AlarmSoundItem getDefaultAlarmSound(Context context) {
+        RingtoneManager ringtoneManager = new RingtoneManager(context);
+        Uri defaultAlarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        if (defaultAlarmUri != null) {
+            String title = RingtoneManager.getRingtone(context, defaultAlarmUri).getTitle(context);
+            return new AlarmSoundItem(title, defaultAlarmUri);
+        }
+        return null;
+    }
+
+    public static String[] getVibratePatternNames() {
+        VibratePattern[] patterns = VibratePattern.values();
+        String[] patternNames = new String[patterns.length];
+        for (int i = 0; i < patterns.length; i++) {
+            patternNames[i] = patterns[i].name();
+        }
+        return patternNames;
     }
 }

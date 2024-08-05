@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     app:strokeWidth="0dp"
     app:cardBackgroundColor="@color/transparent">
 
@@ -11,11 +11,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
+        <TextClock
             android:id="@+id/cardview_clock_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="05"
+            android:format12Hour="hh"
+            android:format24Hour="HH"
             android:textSize="60sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,11 +31,12 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/cardview_clock_hour"
             android:fontFamily="casual"/>
-        <TextView
+        <TextClock
             android:id="@+id/cardview_clock_minute"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="30"
+            android:format12Hour="mm"
+            android:format24Hour="mm"
             android:textSize="60sp"
             app:layout_constraintStart_toEndOf="@id/cardview_clock_colan"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,11 +52,12 @@
             app:layout_constraintBottom_toBottomOf="@id/cardview_clock_minute"
             app:layout_constraintBaseline_toBaselineOf="@id/cardview_clock_space"
             android:fontFamily="sans-serif-thin"/>
-        <TextView
+        <TextClock
             android:id="@+id/cardview_clock_second"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15"
+            android:format12Hour="ss"
+            android:format24Hour="ss"
             android:textSize="40sp"
             app:layout_constraintStart_toEndOf="@id/cardview_clock_colan2"
             app:layout_constraintTop_toTopOf="parent"
@@ -69,14 +72,42 @@
             app:layout_constraintStart_toEndOf="@id/cardview_clock_second"
             app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="sans-serif-light"/>
-        <TextView
+        <TextClock
             android:id="@+id/cardview_clock_ampm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AM"
+            android:format12Hour="a"
+            android:format24Hour="a"
             android:textSize="40sp"
             app:layout_constraintStart_toEndOf="@id/cardview_clock_space"
             app:layout_constraintBaseline_toBaselineOf="@id/cardview_clock_space"
             android:fontFamily="sans-serif-thin"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
+
+    <!--        <ImageView-->
+    <!--            android:id="@+id/sun1"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:src="@drawable/icon_sun"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            android:layout_marginBottom="-24dp"/>-->
+    <!--        <include-->
+    <!--            android:id="@+id/clock"-->
+    <!--            layout="@layout/cardview_clock"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            app:layout_constraintStart_toEndOf="@id/sun1"-->
+    <!--            app:layout_constraintEnd_toStartOf="@id/sun2"-->
+    <!--            app:layout_constraintBottom_toBottomOf="@id/sun1"-->
+    <!--            app:layout_constraintHorizontal_bias="0.5"-->
+    <!--            android:layout_marginBottom="20dp"/>-->
+    <!--        <ImageView-->
+    <!--            android:id="@+id/sun2"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:src="@drawable/icon_sun"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            android:layout_marginBottom="-24dp"/>-->

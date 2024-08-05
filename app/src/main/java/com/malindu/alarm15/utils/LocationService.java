@@ -38,6 +38,7 @@ public class LocationService extends Service {
     private LocationCallback locationCallback;
     private List<LocationAlarm> locationAlarms;
     private Location userLocation;
+    private int activeCount;
 
     public LocationService() {
     }
@@ -77,29 +78,48 @@ public class LocationService extends Service {
             Toast.makeText(this, "Location permissions are not granted", Toast.LENGTH_LONG).show();
             return;
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+        locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 //super.onLocationResult(locationResult);
                 userLocation = locationResult.getLastLocation();
                 if (userLocation != null) {
-                    Log.d(TAG, "Count: " + " -- " + "UserLocation - " + userLocation.getLatitude()+":"+userLocation.getLongitude());
+                    Log.d(TAG, "Count: " + activeCount + " -- " + "UserLocation - " + userLocation.getLatitude()+":"+userLocation.getLongitude());
                     checkLocationAlarms(userLocation);
                 }
-
             }
-        }, Looper.myLooper());
+        };
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+//        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+//            @Override
+//            public void onLocationResult(@NonNull LocationResult locationResult) {
+//                //super.onLocationResult(locationResult);
+//                userLocation = locationResult.getLastLocation();
+//                if (userLocation != null) {
+//                    Log.d(TAG, "Count: " + " -- " + "UserLocation - " + userLocation.getLatitude()+":"+userLocation.getLongitude());
+//                    checkLocationAlarms(userLocation);
+//                }
+//
+//            }
+//        }, Looper.myLooper());
     }
 
     private void checkLocationAlarms(Location location) {
+        activeCount = 0;
         for (LocationAlarm alarm : locationAlarms) {
             if (alarm.isTurnedOn() && isWithinRange(location, alarm)) {
                 showNotification("You are within range of: " + alarm.getTitle());
                 // Optionally: Turn off the alarm if it should only trigger once
                 //TODO allow user to set trigger once or trigger everytime
                 alarm.setTurnedOn(false); // has to write in shared preferences
+                if (LocationUtils.getActiveAlarmCount(getApplicationContext()) == 0) {
+                    Log.d(TAG, "Service stopped");
+                    stopSelf();
+                }
             }
+            if (alarm.isTurnedOn()) { activeCount++; }
         }
+        if (activeCount == 0) { stopSelf(); }
     }
 
     private boolean isWithinRange(Location location, LocationAlarm alarm) {
@@ -117,6 +137,7 @@ public class LocationService extends Service {
                 .setContentText(text)
                 .setSmallIcon(R.drawable.icon_pin_drop)
                 .setContentIntent(pendingIntent)
+                .setOngoing(true)
                 .build();
     }
 

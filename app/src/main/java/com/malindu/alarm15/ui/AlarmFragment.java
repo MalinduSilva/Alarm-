@@ -1,8 +1,11 @@
 package com.malindu.alarm15.ui;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -45,6 +48,7 @@ public class AlarmFragment extends Fragment implements AlarmAddNewClockDialog.On
     private AlarmRecyclerViewAdapter adapter;
     private int permissionRequestTimes = 0;
     private boolean isPermissionsGranted = true;
+    private BroadcastReceiver alarmDismissReceiver;
 
     public AlarmFragment() {
         // Required empty public constructor
@@ -106,6 +110,23 @@ public class AlarmFragment extends Fragment implements AlarmAddNewClockDialog.On
         alarmListRecyclerView.setAdapter(adapter);
         alarmListRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        alarmDismissReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (Constants.ACTION_DISMISS.equals(intent.getAction())) {
+                    adapter.updateData();
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(Constants.ACTION_DISMISS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requireActivity().registerReceiver(alarmDismissReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                requireActivity().registerReceiver(alarmDismissReceiver, filter);
+            }
+        }
+
         deletePreferences = view.findViewById(R.id.btn_test_delete_sharedpreferences);
         deletePreferences.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +164,13 @@ public class AlarmFragment extends Fragment implements AlarmAddNewClockDialog.On
         }
         isPermissionsGranted = true;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (alarmDismissReceiver != null) { requireActivity().unregisterReceiver(alarmDismissReceiver); }
+    }
+
     @Override
     public void onAlarmDeleted() {
         adapter.updateData();
