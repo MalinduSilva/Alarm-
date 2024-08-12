@@ -51,7 +51,7 @@
                 android:id="@+id/icon_address"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/icon_location_outlined"
+                android:src="@drawable/icon_location_200"
                 app:layout_constraintTop_toBottomOf="@id/location_title"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginHorizontal="10dp"
@@ -63,38 +63,53 @@
                 app:layout_constraintTop_toBottomOf="@id/location_title"
                 app:layout_constraintStart_toEndOf="@id/icon_address"
                 app:layout_constraintEnd_toStartOf="@id/switch_on"
+                app:layout_constraintBottom_toBottomOf="@id/icon_address"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:textStyle="italic"
-                android:text="Sri Gunarathana Road, Panadura"/>
+                android:text="Sri Gunarathana Road, Panadura"
+                android:textSize="15sp"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="15sp"
+                app:layout_constraintVertical_bias="0.5"/>
 
             <ImageView
                 android:id="@+id/icon_range"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/icon_arrow_range"
+                android:src="@drawable/icon_radar_200"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txt_address"
-                android:layout_marginHorizontal="10dp"/>
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="5dp"/>
             <TextView
                 android:id="@+id/txt_range"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/txt_address"
+                app:layout_constraintBottom_toBottomOf="@id/icon_range"
                 app:layout_constraintStart_toEndOf="@id/icon_range"
                 app:layout_constraintEnd_toStartOf="@id/switch_on"
                 android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:textStyle="italic"
-                android:text="1000m"/>
+                android:text="1km"
+                android:textSize="15sp"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="15sp"
+                app:layout_constraintVertical_bias="0.5"/>
 
             <LinearLayout
                 android:id="@+id/layout_note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/switch_on"
+                app:layout_constraintTop_toBottomOf="@id/txt_range"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="5dp"
                 android:padding="5dp"
                 android:background="@drawable/background_location_searchbar">
                 <ImageView

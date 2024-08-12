@@ -15,22 +15,11 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="10dp"/>
 
-    <ImageButton
-        android:id="@+id/btn_add_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/location_note"
-        android:src="@drawable/icon_note_add"
-        android:background="@color/transparent"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="10dp"/>
-
     <fragment
         android:id="@+id/mapView"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_below="@id/label_add_alarm"
-        android:layout_above="@id/layout_sensitivity"
+        android:layout_above="@id/layout_range"
         android:layout_marginHorizontal="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -88,7 +77,7 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@id/layout_sensitivity"
+        android:layout_above="@id/layout_range"
         android:layout_below="@id/layout_searchbar"
         android:layout_marginHorizontal="10dp"
         android:background="@drawable/background_location_searchbar"
@@ -135,13 +124,126 @@
             android:layout_marginTop="10dp"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_range"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_above="@id/layout_alert_type">
+        <LinearLayout
+            android:id="@+id/layout_inner_range"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_radar_200"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="10dp">
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/label_range"
+                    android:textSize="20sp"
+                    android:textColor="@color/md_theme_primary"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_alarm_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/label_set_range"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+        </LinearLayout>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="20dp"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/rangeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:checked="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_alert_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_above="@id/layout_note">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/icon_alert_thin"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_alert_type"
+                android:textSize="20sp"
+                android:textColor="@color/md_theme_primary"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txt_alarm_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_alert_type"
+                android:textSize="15sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_above="@id/layout_save_discard">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/icon_note_add_200"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_alarm_note"
+                android:textSize="20sp"
+                android:textColor="@color/md_theme_primary"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txt_alarm_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_alarm_note_desc"
+                android:textSize="15sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <RelativeLayout
-        android:id="@+id/layout_sensitivity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/layout_range"
         android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
         <TextView
             android:id="@+id/label"
             android:layout_width="wrap_content"
@@ -171,7 +273,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/layout_range"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="0dp"
@@ -198,6 +300,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
         android:layout_marginHorizontal="10dp"
         android:id="@+id/layout_save_discard">
         <Button

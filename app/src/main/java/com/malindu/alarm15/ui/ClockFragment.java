@@ -154,6 +154,7 @@ public class ClockFragment extends Fragment {
                         .show();
             }
         });
+        fab.setVisibility(View.GONE);
         adapter = new WorldClockRecyclerViewAdapter(requireContext());
         recyclerView.setAdapter(adapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2);

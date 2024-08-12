@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class Alarm implements Serializable, Comparable<Alarm> {
     private String alarmID = "";
@@ -113,7 +114,7 @@ public class Alarm implements Serializable, Comparable<Alarm> {
         return time;
     }
     public String getAlarmDateAsText() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMMM");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMMM", Locale.getDefault());
         String date = "test";
         Calendar calendar = Calendar.getInstance();
         if (isSet_for_today()) {

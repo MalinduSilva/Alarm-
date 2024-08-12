@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 public class LocationAlarm implements Serializable {
+    public static final String ALERT_TYPE_ALARM = "ALERT_TYPE_ALARM";
+    public static final String ALERT_TYPE_NOTIFICATION = "ALERT_TYPE_NOTIFICATION";
     private Location location;
     private int range;
     private boolean exact, proximity;
@@ -24,6 +26,7 @@ public class LocationAlarm implements Serializable {
     private String note = "";
     private Calendar dateCreated;
     private String locationAlarmID;
+    private String alertType;
 
     // Getters
     public String getLocationAlarmID() { return locationAlarmID; }
@@ -38,6 +41,7 @@ public class LocationAlarm implements Serializable {
     public String getNote_title() { return note_title; }
     public String getNote() { return note; }
     public Calendar getDateCreated() { return dateCreated; }
+    public String getAlertType() { return alertType; }
 
     // Setters
     public void setLocationAlarmID(String locationAlarmID) { this.locationAlarmID = locationAlarmID; }
@@ -52,10 +56,12 @@ public class LocationAlarm implements Serializable {
     public void setNote_title(String note_title) { this.note_title = note_title; }
     public void setNote(String note) { this.note = note; }
     public void setDateCreated(long dateCreated) { this.dateCreated.setTimeInMillis(dateCreated); }
+    public void setAlertType(String alertType) { this.alertType = alertType; }
 
     // Constructor
     public LocationAlarm() {
-        range = 5;
+        range = 1000;
+        alertType = ALERT_TYPE_ALARM;
         exact = false;
         proximity = true;
     }
@@ -71,7 +77,8 @@ public class LocationAlarm implements Serializable {
                 /* 5 */ title + "|" +
                 /* 6 */ address + "|" +
                 /* 7 */ note_title + "|" +
-                /* 8 */ note + "|" + "end"; // "end" is added to prevent the empty note getting ignored by split() method
-                /* 9 */ //dateCreated.getTimeInMillis();
+                /* 8 */ note + "|" +
+                /* 9 */ alertType + "|" +  "end"; // "end" is added to prevent the empty note getting ignored by split() method
+                /* 10 */ //dateCreated.getTimeInMillis();
     }
 }

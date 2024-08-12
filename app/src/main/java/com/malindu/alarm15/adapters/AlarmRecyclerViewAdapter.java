@@ -76,10 +76,11 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Alarm alarm = alarmList.get(position);
+        Log.d(TAG, "onBindViewHolder: " + alarm.toString());
         if (alarm.getAlarmLabel().isEmpty()) {
-            //holder.cardview_alarm_label_layout.setVisibility(View.GONE); //TODO: change this
-            holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
-            holder.alarmLabel.setText(alarm.getAlarmID());
+            holder.cardview_alarm_label_layout.setVisibility(View.GONE);
+//            holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
+//            holder.alarmLabel.setText(alarm.getAlarmID());
         } else {
             holder.cardview_alarm_label_layout.setVisibility(View.VISIBLE);
             holder.alarmLabel.setText(alarm.getAlarmLabel());
@@ -142,7 +143,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
             }
         });
         holder.cardview_alarm_frequency_weekdays_layout.setVisibility(alarm.isSet_for_weekdays() ? View.VISIBLE : View.GONE);
-        holder.cardview_alarm_frequency_date.setVisibility(alarm.isSet_for_date() ? View.VISIBLE : View.GONE);
+        holder.cardview_alarm_frequency_date.setVisibility(alarm.isSet_for_date() || alarm.isSet_for_today() || alarm.isSet_for_tomorrow() ? View.VISIBLE : View.GONE);
         holder.cardview_txt_monday.setTextColor(alarm.getWeekdays(0) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
         holder.cardview_txt_tuesday.setTextColor(alarm.getWeekdays(1) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));
         holder.cardview_txt_wednesday.setTextColor(alarm.getWeekdays(2) ? context.getColor(R.color.black) : context.getColor(R.color.ash_border));

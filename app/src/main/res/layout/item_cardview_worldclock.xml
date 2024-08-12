@@ -39,13 +39,16 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:format12Hour="hh:mm a"
+            android:format24Hour="HH:mm a"/>
         <TextClock
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/time"
-            android:format12Hour="dd MMM"/>
+            android:format12Hour="dd MMM"
+            android:format24Hour="dd MMM"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

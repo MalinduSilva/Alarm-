@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -36,6 +37,40 @@ public class WorldClockItem implements Comparable<WorldClockItem> {
         }
         //Log.d(TAG, "getAllTimeZones: " + list.size());
         return list;
+    }
+
+    public static List<String> getSearchCityList(String str) {
+        List<WorldClockItem> tz_list = getAllTimeZones();
+        List<String> city_list = new ArrayList<>();
+        if (str.isEmpty()) {
+            for (int i = 0; i < tz_list.size(); i++) {
+                city_list.add(tz_list.get(i).city);
+            }
+        } else {
+            for (int i = 0; i < tz_list.size(); i++) {
+                String city = tz_list.get(i).city;
+                if (city.contains(str)) {
+                    city_list.add(city);
+                }
+            }
+        }
+        //return city_list.toArray(new String[0]);
+        return city_list;
+    }
+
+    public static WorldClockItem getWCItemFromCity(String city) {
+        List<WorldClockItem> tz_list = getAllTimeZones();
+        int count = 0;
+        WorldClockItem worldClockItem = new WorldClockItem("", "");
+        for (int i = 0; i < tz_list.size(); i++) {
+            if (tz_list.get(i).city.equals(city)) {
+                worldClockItem.city = tz_list.get(i).city;
+                worldClockItem.timeZoneID = tz_list.get(i).timeZoneID;
+                count++;
+            }
+        }
+        Log.d(TAG, "getWCItemFromCity: count = " + count);
+        return worldClockItem;
     }
 
     @NonNull

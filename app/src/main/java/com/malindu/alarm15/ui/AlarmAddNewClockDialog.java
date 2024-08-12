@@ -129,9 +129,11 @@ public class AlarmAddNewClockDialog extends DialogFragment {
                 if (!newAlarm.isSet_for_date() && !newAlarm.isSet_for_weekdays()) {
                     Calendar currentTime = Calendar.getInstance();
                     if (newAlarm.getAlarmTime().after(currentTime)) {
+                        Log.d(TAG, "Time(save): " + newAlarm.getAlarmTime().get(Calendar.DAY_OF_MONTH));
                         newAlarm.setSet_for_today(true);
                         newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DATE));
                     } else {
+                        Log.d(TAG, "Time(save): " + newAlarm.getAlarmTime().get(Calendar.DAY_OF_MONTH));
                         newAlarm.setSet_for_tomorrow(true);
                         newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DATE) + 1);
                     }
@@ -172,8 +174,17 @@ public class AlarmAddNewClockDialog extends DialogFragment {
                 newAlarm.setTime(hourOfDay, minute);
                 Calendar currentTime = Calendar.getInstance();
                 if (!newAlarm.isSet_for_weekdays() && !newAlarm.isSet_for_date()) {
-                    if (newAlarm.getAlarmTime().after(currentTime)) { newAlarm.setSet_for_today(true);
-                    } else { newAlarm.setSet_for_tomorrow(true); }
+                    if (newAlarm.getAlarmTime().get(Calendar.HOUR_OF_DAY) > currentTime.get(Calendar.HOUR_OF_DAY)
+                        || (newAlarm.getAlarmTime().get(Calendar.HOUR_OF_DAY) == currentTime.get(Calendar.HOUR_OF_DAY))
+                            && newAlarm.getAlarmTime().get(Calendar.MINUTE) > currentTime.get(Calendar.MINUTE)) {
+                        newAlarm.setSet_for_today(true);
+                        newAlarm.setSet_for_tomorrow(false);
+                        newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DAY_OF_MONTH));
+                    } else {
+                        newAlarm.setSet_for_tomorrow(true);
+                        newAlarm.setSet_for_today(false);
+                        newAlarm.setDate(currentTime.get(Calendar.YEAR), currentTime.get(Calendar.MONTH), currentTime.get(Calendar.DAY_OF_MONTH)+1);
+                    }
                 }
                 txt_alarm_frequency.setText(newAlarm.getAlarmDateAsText());
             }

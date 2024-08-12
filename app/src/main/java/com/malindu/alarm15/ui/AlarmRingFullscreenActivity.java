@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -56,6 +57,14 @@ public class AlarmRingFullscreenActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // For displays with camera notch
+            Window window = getWindow();
+            WindowManager.LayoutParams layoutParams = window.getAttributes();
+            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            window.setAttributes(layoutParams);
+        }
 
         dismissButton = findViewById(R.id.dismissButton);
         snoozeButton = findViewById(R.id.snoozeButton);
@@ -141,9 +150,9 @@ public class AlarmRingFullscreenActivity extends AppCompatActivity {
 
     private void animateDismissButtonShade() {
         final int startWidth = dismissButtonShade.getWidth();
-        final int endWidth = startWidth * 2; // or any desired width
+        final int endWidth = startWidth * 2;
         final int startHeight = dismissButtonShade.getHeight();
-        final int endHeight = startHeight * 2; // or any desired height
+        final int endHeight = startHeight * 2;
 
         ValueAnimator widthAnimator = ValueAnimator.ofInt(startWidth, endWidth);
         widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

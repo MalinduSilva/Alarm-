@@ -149,4 +149,9 @@ LocationRecyclerViewAdapter.OnLocationClickListener {
         dialog.setOnLocationAddedListener(this);
         dialog.show(getParentFragmentManager(), LocationAddNewDialog.TAG);
     }
+
+    @Override
+    public void onLocationDelete() {
+        adapter.updateData();
+    }
 }

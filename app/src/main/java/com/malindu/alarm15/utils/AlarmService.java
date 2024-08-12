@@ -90,7 +90,8 @@ public class AlarmService extends Service {
                     Intent dismissIntent = new Intent(Constants.ACTION_DISMISS);
                     stopAlarmSound();
                     stopAlarmVibrate();
-                    context.sendBroadcast(dismissIntent);
+                    AlarmUtils.rescheduleAlarm(context, alarm);
+                    context.sendBroadcast(dismissIntent); // to update alarm list, if the alarm rings while user is in alarm list screen
                     stopSelf();
                     break;
                 case Constants.ACTION_SNOOZE:
@@ -151,7 +152,7 @@ public class AlarmService extends Service {
         dismissIntent.setAction(Constants.ACTION_DISMISS);
         PendingIntent dismissPendingIntent = PendingIntent.getService(context, 1, dismissIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Intent for dismiss action
+        // Intent for snooze action
         Intent snoozeIntent = new Intent(context, AlarmService.class);
         snoozeIntent.putExtra("AlarmStr", alarm.getStringObj());
         snoozeIntent.setAction(Constants.ACTION_SNOOZE);

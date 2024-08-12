@@ -136,6 +136,8 @@ public class Constants {
     public static final String ACTION_NEW_LOCATION_ALARM = "com.malindu.alarm15.ACTION_NEW_LOCATION_ALARM";
     public static final String ACTION_CANCEL_LOCATION_ALARM = "com.malindu.alarm15.ACTION_NEW_LOCATION_ALARM";
     public static final String ACTION_START_LOCATION_SERVICE = "com.malindu.alarm15.ACTION_START_LOCATION_SERVICE";
+    public static final String ACTION_LOCATION_ALARM_DISMISS = "com.malindu.alarm15.ACTION_LOCATION_ALARM_DISMISS";
+    public static final String ACTION_LOCATION_ALARM_DISMISS_AND_OFF = "com.malindu.alarm15.ACTION_LOCATION_ALARM_DISMISS_AND_OFF";
 
 
     /**

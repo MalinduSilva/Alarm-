@@ -14,6 +14,9 @@
 
 package com.malindu.alarm15.adapters;
 
+import android.text.TextPaint;
+import android.text.style.CharacterStyle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,8 @@ import com.malindu.alarm15.R;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -65,6 +70,17 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
     public void setPredictions(List<AutocompletePrediction> predictions) {
         this.predictions.clear();
         this.predictions.addAll(predictions);
+        this.predictions.sort(new Comparator<AutocompletePrediction>() {
+            @Override
+            public int compare(AutocompletePrediction o1, AutocompletePrediction o2) {
+                Integer distance1 = o1.getDistanceMeters();
+                Integer distance2 = o2.getDistanceMeters();
+                if (distance1 == null && distance2 == null) { return 0;
+                } else if (distance1 == null) { return 1; // null values are considered greater
+                } else if (distance2 == null) { return -1;}
+                return distance1.compareTo(distance2);
+            }
+        });
         notifyDataSetChanged();
     }
 
@@ -84,8 +100,19 @@ public class PlacePredictionAdapter extends RecyclerView.Adapter<PlacePrediction
         }
 
         public void setPrediction(AutocompletePrediction prediction) {
-            title.setText(prediction.getPrimaryText(null));
+            CustomStyle customStyle = new CustomStyle();
+            title.setText(prediction.getPrimaryText(customStyle));
             address.setText(prediction.getSecondaryText(null));
+        }
+    }
+
+    private static class CustomStyle extends CharacterStyle {
+
+        @Override
+        public void updateDrawState(TextPaint tp) {
+            // Custom styling code
+            //tp.setColor(0xFF00FF00); // Set text color to green
+            tp.setFakeBoldText(true); // Apply a fake bold effect
         }
     }
 

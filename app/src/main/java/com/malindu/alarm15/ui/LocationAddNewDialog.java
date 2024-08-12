@@ -1,9 +1,12 @@
 package com.malindu.alarm15.ui;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,6 +19,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
@@ -65,13 +70,19 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.LocationBias;
+import com.google.android.libraries.places.api.model.LocationRestriction;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.malindu.alarm15.BuildConfig;
@@ -91,6 +102,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, LocationNoteDialog.OnNoteAddedListener {
     public static final String TAG = "LocationAddNewDialog";
@@ -104,6 +116,8 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
     // Current location
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentLocation;
+    private Locale locale;
+    private LatLngBounds mapBounds;
 
     // Autocomplete
     private final Handler handler = new Handler();
@@ -120,17 +134,20 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
 
     // Widgets
     private RadioGroup radioGroupRange;
-    private LinearLayout layoutRange;
+    private LinearLayout layoutRange, layoutAlertType, layoutNote;
     private AutoCompleteTextView searchTxt;
     private EditText txtRange;
     private ImageView btnLocateMe, btnZoomIn, btnZoomOut;
     private Button btnDiscard, btnSave;
-    private ImageButton btnAddNote;
     private ImageView btnClear;
+    private MaterialTextView txt_alarm_range, txt_alarm_alert, txt_alarm_note;
 
     // Logical
     private boolean placeClicked = false;
     private LocationAlarm locationAlarm;
+    private int selectedRange;
+    private int locationRange;
+    private int alertType;
 
     public interface OnLocationAddedListener {
         void onLocationAdded();
@@ -156,13 +173,17 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         //return super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.dialog_add_location_alarm, container, false);
         radioGroupRange = view.findViewById(R.id.radioGroup);
-        layoutRange = view.findViewById(R.id.layout_range);
+        layoutRange = view.findViewById(R.id.layout_inner_range);
+        layoutAlertType = view.findViewById(R.id.layout_alert_type);
+        layoutNote = view.findViewById(R.id.layout_note);
         searchTxt = view.findViewById(R.id.editTextSearch);
+        txt_alarm_range = view.findViewById(R.id.txt_alarm_range);
+        txt_alarm_alert = view.findViewById(R.id.txt_alarm_alert);
+        txt_alarm_note = view.findViewById(R.id.txt_alarm_note);
         txtRange = view.findViewById(R.id.txtRange);
         btnLocateMe = view.findViewById(R.id.btnLocateMe);
         btnDiscard = view.findViewById(R.id.btn_discard);
         btnSave = view.findViewById(R.id.btn_save);
-        btnAddNote = view.findViewById(R.id.btn_add_note);
         btnClear = view.findViewById(R.id.btn_clear);
         btnZoomIn = view.findViewById(R.id.btnZoomIn);
         btnZoomOut = view.findViewById(R.id.btnZoomOut);
@@ -171,6 +192,8 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         placesClient = Places.createClient(requireContext());
         queue = Volley.newRequestQueue(requireContext());
         sessionToken = AutocompleteSessionToken.newInstance();
+        //txt_alarm_alert.setTextColor(getResources().getColor(R.color.md_theme_primary));
+        //txt_alarm_range.setTextColor(getResources().getColor(R.color.md_theme_primary));
 
         sharedPreferences = view.getContext().getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
         if (sharedPreferences.getBoolean(Constants.ALARM_PREFERENCES_KEY_FIRST_LAUNCH_LOCATION, true)) {
@@ -187,20 +210,21 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         mapFragment.getMapAsync(this);
         initRecyclerView(view);
 
-        radioGroupRange.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radioButtonProximity) {
-                    layoutRange.setVisibility(View.VISIBLE);
-                    locationAlarm.setProximity(true);
-                    locationAlarm.setExact(false);
-                } else if (checkedId == R.id.radioButtonExact) {
-                    layoutRange.setVisibility(View.INVISIBLE);
-                    locationAlarm.setProximity(false);
-                    locationAlarm.setExact(true);
-                }
-            }
-        });
+//        radioGroupRange.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.radioButtonProximity) {
+//                    layoutRange.setVisibility(View.VISIBLE);
+//                    locationAlarm.setProximity(true);
+//                    locationAlarm.setExact(false);
+//                } else if (checkedId == R.id.radioButtonExact) {
+//                    layoutRange.setVisibility(View.INVISIBLE);
+//                    locationAlarm.setProximity(false);
+//                    locationAlarm.setExact(true);
+//                }
+//            }
+//        });
+
 
         btnDiscard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,40 +236,25 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (locationAlarm.isExact() || (!locationAlarm.isExact() && txtRange.getText().toString().isEmpty())) {
-                    // If the alarm is set to exact or alarm is set to proximity but range is not set
-                    locationAlarm.setRange(Constants.DEFAULT_RANGE);
-                } else {
-                    locationAlarm.setRange(Integer.parseInt(txtRange.getText().toString()));
-                }
+//                if (locationAlarm.isExact() || (!locationAlarm.isExact() && txtRange.getText().toString().isEmpty())) {
+//                    // If the alarm is set to exact or alarm is set to proximity but range is not set
+//                    locationAlarm.setRange(Constants.DEFAULT_RANGE);
+//                } else {
+//                    locationAlarm.setRange(Integer.parseInt(txtRange.getText().toString()));
+//                }
                 locationAlarm.setTurnedOn(true);
+                locationAlarm.setRange(locationRange);
                 if (getArguments() == null) {
                     locationAlarm.setLocationAlarmID(Constants.LOCATION_ALARM_KEY + System.currentTimeMillis());
                 }
-                LocationUtils.setLocationAlarm(requireContext(), locationAlarm);
-                if (listener != null) {
-                    listener.onLocationAdded();
+                if (placeClicked) {
+                    LocationUtils.setLocationAlarm(requireContext(), locationAlarm);
+                    if (listener != null) {
+                        listener.onLocationAdded();
+                    }
                 }
+                displayToast();
                 getDialog().dismiss();
-            }
-        });
-
-        btnAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getArguments() != null && getArguments().containsKey("location")) {
-                    LocationNoteDialog dialog = LocationNoteDialog.newInstance(locationAlarm.getNote_title(), locationAlarm.getNote());
-                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
-                    dialog.setCancelable(false);
-                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
-                    dialog.show(getParentFragmentManager(), LocationNoteDialog.TAG);
-                } else {
-                    LocationNoteDialog dialog = new LocationNoteDialog();
-                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
-                    dialog.setCancelable(false);
-                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
-                    dialog.show(getFragmentManager(), LocationNoteDialog.TAG);
-                }
             }
         });
 
@@ -262,39 +271,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             }
         });
 
-        searchTxt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //a
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d(TAG, "onTextChanged: " + s.toString() + ", " + start + ", " + before + ", " + count);
-                if (count == 0) {
-                    recyclerView.setVisibility(View.GONE);
-                } else {
-                    if (!placeClicked) {
-                        btnClear.setVisibility(View.GONE);
-                        progressBar.setIndeterminate(true);
-                        progressBar.setVisibility(View.VISIBLE);
-                        //recyclerView.setVisibility(View.VISIBLE);
-                        handler.removeCallbacksAndMessages(null);
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                getPlacePredictions(s.toString());
-                            }
-                        }, 300);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //a
-            }
-        });
 //        //initialize the AutocompleteSupportFragment and associate it with a layout element
 //        AutocompleteSupportFragment autocompleteSupportFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);// requireActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 //        if (autocompleteSupportFragment != null) {
@@ -445,6 +422,18 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
 
     private void init() {
         Log.d(TAG, "init: initializing");
+        if (getArguments() != null && getArguments().containsKey("location")) {
+            locationAlarm = (LocationAlarm) getArguments().getSerializable("location");
+            String noteStr = "";
+            if (!locationAlarm.getNote_title().isEmpty()) { noteStr = locationAlarm.getNote_title();
+            } else if (!locationAlarm.getNote().isEmpty()) { noteStr = locationAlarm.getNote();
+            } else { noteStr = getString(R.string.label_alarm_note_desc); }
+            txt_alarm_note.setText(noteStr);
+            populateFieldsWithExistingData();
+        } else {
+            locationAlarm = new LocationAlarm();
+        }
+        locale = Locale.getDefault();
 //        googleApiClient = new GoogleApiClient.Builder(requireContext())
 //                .addApi(Places.GEO_DATA_API)
 //                .addApi(Places.PLACE_DETECTION_API)
@@ -452,6 +441,40 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
 //                .build();
 //        placesAutoCompleteAdapter = new PlacesAutoCompleteAdapter(requireContext(), googleApiClient, LAT_LNG_BOUNDS, null);
 //        editTextSearch.setAdapter(placesAutoCompleteAdapter);
+
+        searchTxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //a
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(TAG, "onTextChanged: " + s.toString() + ", " + start + ", " + before + ", " + count);
+                if (count == 0) {
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    if (!placeClicked) {
+                        btnClear.setVisibility(View.GONE);
+                        progressBar.setIndeterminate(true);
+                        progressBar.setVisibility(View.VISIBLE);
+                        //recyclerView.setVisibility(View.VISIBLE);
+                        handler.removeCallbacksAndMessages(null);
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getPlacePredictions(s.toString());
+                            }
+                        }, 300);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //a
+            }
+        });
         searchTxt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -485,10 +508,33 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
             public void onPoiClick(@NonNull PointOfInterest pointOfInterest) {
                 Log.d(TAG, "onPoiClick: " + pointOfInterest.name);
                 locationAlarm.setLatLng(pointOfInterest.latLng);
+                locationAlarm.setTitle(pointOfInterest.name);
+                btnSave.setEnabled(false);
+                FetchPlaceRequest fetchPlaceRequest = FetchPlaceRequest.builder(pointOfInterest.placeId, Arrays.asList(Place.Field.ADDRESS)).build();
+                placesClient.fetchPlace(fetchPlaceRequest)
+                        .addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+                            @Override
+                            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                                locationAlarm.setAddress(fetchPlaceResponse.getPlace().getAddress());
+                                btnSave.setEnabled(true);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                btnSave.setEnabled(true);
+                            }
+                        });
                 placeClicked = true;
                 searchTxt.setText(pointOfInterest.name);
                 btnClear.setVisibility(View.VISIBLE);
                 moveCamera(pointOfInterest.latLng, Constants.DEFAULT_MAP_ZOOM, pointOfInterest.name);
+            }
+        });
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                mapBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
             }
         });
         btnZoomIn.setOnClickListener(new View.OnClickListener() {
@@ -505,12 +551,134 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom - Constants.DEFAULT_MAP_ZOOM_ADJUST));
             }
         });
-        if (getArguments() != null && getArguments().containsKey("location")) {
-            locationAlarm = (LocationAlarm) getArguments().getSerializable("location");
-            populateFieldsWithExistingData();
-        } else {
-            locationAlarm = new LocationAlarm();
-        }
+        locationRange = locationAlarm.getRange();
+        setRangeTxt();
+        layoutRange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = LayoutInflater.from(requireContext());
+                View dialogView = inflater.inflate(R.layout.dialog_range_input, null);
+                EditText custom_range = dialogView.findViewById(R.id.custom_range);
+                TextView labelEnter = dialogView.findViewById(R.id.label_enter);
+                TextInputLayout unitLayout = dialogView.findViewById(R.id.menu);
+                AutoCompleteTextView autoCompleteTextView = dialogView.findViewById(R.id.unit);
+                String[] rangeList = getResources().getStringArray(R.array.range_list);
+                String[] unitList = getResources().getStringArray(R.array.unit_list);
+                unitLayout.setHint(R.string.label_units);
+                autoCompleteTextView.setText(unitList[0], false);
+                labelEnter.setTextSize(autoCompleteTextView.getTextSize()-10);
+                dialogView.setVisibility(View.GONE);
+
+                int chechedItem = 0;
+                switch (locationAlarm.getRange()) {
+                    case 100: chechedItem = 0; break;
+                    case 200: chechedItem = 1; break;
+                    case 500: chechedItem = 2; break;
+                    case 1000: chechedItem = 3; break;
+                    case 2000: chechedItem = 4; break;
+                    case 5000: chechedItem = 5; break;
+                    default:
+                        chechedItem = 6;
+                        int range = locationAlarm.getRange();
+                        if (range % 1000 == 0) {
+                            custom_range.setText(String.valueOf(range / 1000));
+                            autoCompleteTextView.setText(unitList[1], false);
+                        } else {
+                            custom_range.setText(String.valueOf(range));
+                            autoCompleteTextView.setText(unitList[0], false);
+                        }
+                        dialogView.setVisibility(View.VISIBLE);
+                        break;
+                }
+
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.title_select_range)
+                        .setSingleChoiceItems(rangeList, chechedItem, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectedRange = which;
+                                if (which == 6)
+                                    dialogView.setVisibility(View.VISIBLE);
+                                else
+                                    dialogView.setVisibility(View.GONE);
+                            }
+                        })
+                        .setView(dialogView)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (selectedRange) {
+                                    case 0: locationRange = 100; break;
+                                    case 1: locationRange = 200; break;
+                                    case 2: locationRange = 500; break;
+                                    case 3: locationRange = 1000; break;
+                                    case 4: locationRange = 2000; break;
+                                    case 5: locationRange = 5000; break;
+                                    case 6:
+                                        String rangeStr = custom_range.getText().toString();
+                                        String unit = autoCompleteTextView.getText().toString().equals(unitList[0]) ? "m" : "km";
+                                        int range = Integer.parseInt(rangeStr);
+                                        if (unit.equals(unitList[1])) range *= 1000;
+                                        locationRange = range;
+                                        break;
+                                    default: break;
+                                }
+                                setRangeTxt();
+                            }
+                        })
+                        .show();
+            }
+        });
+        String[] alertTypeList = {LocationAlarm.ALERT_TYPE_ALARM, LocationAlarm.ALERT_TYPE_NOTIFICATION};
+        layoutAlertType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.title_select_alert_type)
+                        .setSingleChoiceItems(alertTypeList, 0, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertType = which;
+                            }
+                        })
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                locationAlarm.setAlertType(alertType == 0 ? LocationAlarm.ALERT_TYPE_ALARM : LocationAlarm.ALERT_TYPE_NOTIFICATION);
+                                setRangeTxt();
+                            }
+                        })
+                        .show();
+            }
+        });
+        layoutNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getArguments() != null && getArguments().containsKey("location")) {
+                    LocationNoteDialog dialog = LocationNoteDialog.newInstance(locationAlarm.getNote_title(), locationAlarm.getNote());
+                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
+                    dialog.setCancelable(false);
+                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
+                    dialog.show(getParentFragmentManager(), LocationNoteDialog.TAG);
+                } else {
+                    LocationNoteDialog dialog = LocationNoteDialog.newInstance(locationAlarm.getNote_title(), locationAlarm.getNote());
+                    dialog.setTargetFragment(LocationAddNewDialog.this, 1);
+                    dialog.setCancelable(false);
+                    dialog.setOnNoteAddedListener(LocationAddNewDialog.this);
+                    dialog.show(getFragmentManager(), LocationNoteDialog.TAG);
+                }
+            }
+        });
+    }
+    private void setRangeTxt() {
+        float range = locationRange;
+        String s = "";
+        if (range >= 1000)
+            s = String.format(Locale.getDefault(), "%f", range / 1000.0).replaceAll("0*$", "").replaceAll("\\.$", "") + " km";
+        else
+            s = String.format(Locale.getDefault(), "%f", range).replaceAll("0*$", "").replaceAll("\\.$", "") + " m";
+        txt_alarm_range.setText(s);
+        txt_alarm_alert.setText(locationAlarm.getAlertType());
     }
 
     private void geoLocate() {
@@ -565,20 +733,36 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
 
     private void getPlacePredictions(String query) {
         LocationBias bias;
+        String countryCode = "";
+        RectangularBounds locationRestriction = null;
         if (currentLocation != null) {
-            LatLng southwest = new LatLng(currentLocation.getLatitude() - 1, currentLocation.getLongitude() - 1);
-            LatLng northeast = new LatLng(currentLocation.getLatitude() + 1, currentLocation.getLongitude() + 1);
+            LatLng southwest = new LatLng(currentLocation.getLatitude() - 0.01, currentLocation.getLongitude() - 0.01);
+            LatLng northeast = new LatLng(currentLocation.getLatitude() + 0.01, currentLocation.getLongitude() + 0.01);
             bias = RectangularBounds.newInstance(southwest, northeast);
+            locationRestriction = RectangularBounds.newInstance(southwest, northeast);
+            Geocoder geocoder = new Geocoder(requireContext());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    countryCode = addresses.get(0).getCountryCode();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             bias = RectangularBounds.newInstance(LAT_LNG_BOUNDS_DEFAULT);
+            countryCode = Locale.getDefault().getCountry();
         }
 
         final FindAutocompletePredictionsRequest newRequest = FindAutocompletePredictionsRequest
                 .builder()
                 .setSessionToken(sessionToken)
                 .setLocationBias(bias)
+                //.setLocationBias(RectangularBounds.newInstance(mapBounds.southwest, mapBounds.northeast)) // not suitable
+                //.setLocationRestriction(locationRestriction) // not suitable
                 .setQuery(query)
-                .setCountries(Arrays.asList("LK"))
+                .setCountries(Arrays.asList(countryCode))
+                .setOrigin(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
                 //.setTypesFilter(null)
                 .build();
 
@@ -591,6 +775,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
                 progressBar.setVisibility(View.GONE);
                 btnClear.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
+                Log.d(TAG, "onSuccess: " + predictions);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -622,7 +807,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
 
                         // Use Gson to convert the response JSON object to a POJO
                         GeocodingResult result = gson.fromJson(results.getString(0), GeocodingResult.class);
-                        displayDialog(placePrediction, result);
+                        setLocationData(placePrediction, result);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -655,7 +840,7 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         queue.add(request);
     }
 
-    private void displayDialog(AutocompletePrediction place, GeocodingResult result) {
+    private void setLocationData(AutocompletePrediction place, GeocodingResult result) {
         Log.d("RESULTS", place.getPrimaryText(null).toString() + " : " + result.geometry.location);
         Log.d("RESULTS", place.toString());
         searchTxt.setText(place.getPrimaryText(null));
@@ -671,6 +856,11 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
     public void onNoteAdded(String title, String note) {
         locationAlarm.setNote_title(title);
         locationAlarm.setNote(note);
+        String noteStr = "";
+        if (!title.isEmpty()) { noteStr = title;
+        } else if (!note.isEmpty()) { noteStr = note;
+        } else { noteStr = getString(R.string.label_alarm_note_desc); }
+        txt_alarm_note.setText(noteStr);
     }
 
     private void populateFieldsWithExistingData() {
@@ -680,6 +870,16 @@ public class LocationAddNewDialog extends DialogFragment implements OnMapReadyCa
         searchTxt.setText(locationAlarm.getTitle());
         recyclerView.setVisibility(View.GONE);
         moveCamera(locationAlarm.getLatLng(), Constants.DEFAULT_MAP_ZOOM, locationAlarm.getTitle());
+    }
+
+    private void displayToast() {
+        String msg = "You will be notified ";
+        if (locationAlarm.isExact()) {
+            msg += "at " + locationAlarm.getTitle() + ".";
+        } else {
+            msg += "within " + locationAlarm.getRange() + " meters of " + locationAlarm.getTitle();
+        }
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void onClickMap(LatLng latLng) {

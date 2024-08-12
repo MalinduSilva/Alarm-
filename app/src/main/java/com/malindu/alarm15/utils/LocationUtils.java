@@ -32,7 +32,7 @@ public class LocationUtils {
         saveLocationAlarm(context, locationAlarm);
     }
 
-    private static void saveLocationAlarm(Context context, LocationAlarm locationAlarm) {
+    public static void saveLocationAlarm(Context context, LocationAlarm locationAlarm) {
         SharedPreferences pref = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString(locationAlarm.getLocationAlarmID(), locationAlarm.toString());
@@ -65,6 +65,7 @@ public class LocationUtils {
         alarm.setAddress(parts[6]);
         alarm.setNote_title(parts[7]);
         alarm.setNote(parts[8]);
+        alarm.setAlertType(parts[9]);
         //alarm.setDateCreated(Long.parseLong(parts[9]));
 
         return alarm;

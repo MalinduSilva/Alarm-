@@ -29,38 +29,62 @@ public class AlarmUtils {
     private static int alarmNo = 0;
 
     public static void setAlarm(Context context, Alarm alarm) {
-        boolean isNew = false;
-        //SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
-        if (alarm.getAlarmID().isEmpty()) {
-            alarm.setAlarmID((Constants.ALARM_KEY + System.currentTimeMillis()));
-            //int alarmNumber = sharedPreferences.getInt(Constants.ALARM_COUNT_KEY, 0) + 1;
-            //alarm.setAlarmID(Constants.ALARM_KEY + alarmNumber);
-            isNew = true;
-        }
-        if (alarm.getAlarmTime().before(Calendar.getInstance())) {
-            alarm.setDate(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DATE) + 1);
-        }
+        if (!alarm.isSet_for_weekdays()) {
+            boolean isNew = false;
+            //SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.ALARM_PREFERENCES_FILE, Context.MODE_PRIVATE);
+            if (alarm.getAlarmID().isEmpty()) {
+                alarm.setAlarmID((Constants.ALARM_KEY + System.currentTimeMillis()));
+                //int alarmNumber = sharedPreferences.getInt(Constants.ALARM_COUNT_KEY, 0) + 1;
+                //alarm.setAlarmID(Constants.ALARM_KEY + alarmNumber);
+                isNew = true;
+            }
+            if (alarm.getAlarmTime().before(Calendar.getInstance())) {
+                alarm.setDate(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DATE) + 1);
+            }
 
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra("AlarmStr", alarm.getStringObj());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getAlarmID().substring(Constants.ALARM_KEY.length()).hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        //PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Integer.parseInt(alarm.getAlarmID().substring(Constants.ALARM_KEY.length())), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (alarmManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    Log.d(TAG, "setAlarm: permission ok");
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.putExtra("AlarmStr", alarm.getStringObj());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarm.getAlarmID().substring(Constants.ALARM_KEY.length()).hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            //PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Integer.parseInt(alarm.getAlarmID().substring(Constants.ALARM_KEY.length())), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (alarmManager.canScheduleExactAlarms()) {
+                        Log.d(TAG, "setAlarm: permission ok");
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.getAlarmTime().getTimeInMillis(), pendingIntent);
+                    }
+                } else {
                     alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.getAlarmTime().getTimeInMillis(), pendingIntent);
                 }
+                saveAlarm(context, alarm, isNew);
+                Log.d(TAG, "setAlarm: " + alarm);
+                showToast(context, alarm);
             } else {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.getAlarmTime().getTimeInMillis(), pendingIntent);
+                Log.e(TAG, "setAlarm: Alarm Manager is null!!!", new Exception("Exception: Alarm Manager is null!!!")); Log.i(TAG, "setAlarm: Alarm Manager is null!!!");
             }
-            saveAlarm(context, alarm, isNew);
-            Log.d(TAG, "setAlarm: " + alarm);
-            showToast(context, alarm);
         } else {
-            Log.e(TAG, "setAlarm: Alarm Manager is null!!!", new Exception("Exception: Alarm Manager is null!!!")); Log.i(TAG, "setAlarm: Alarm Manager is null!!!");
+            int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
+            int nextDay = -1;
+            for (int i = today; i < 7; i++) { if (alarm.getWeekdays(i)) { nextDay = i; break; } }
+            if (nextDay == -1) { for (int i = 0; i < today; i++) { if (alarm.getWeekdays(i)) { nextDay = i; break; } } }
+            Log.d(TAG, "setAlarm: " + nextDay);
         }
+    }
+
+    public static void rescheduleAlarm(Context context, Alarm alarm) {
+        if (alarm.isSet_for_tomorrow() || alarm.isSet_for_today() || alarm.isSet_for_date()) { return; }
+
+        int today = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1;
+        int nextDay = today;
+        if (alarm.isSet_for_weekdays()) {
+            for (int i = today + 1; i < 8; i++) {
+                if (alarm.getWeekdays(i)) { nextDay = i; }
+            }
+            for (int i = 0; i < today; i++) {
+                if (alarm.getWeekdays(i)) { nextDay = i; }
+            }
+        }
+        Log.d(TAG, "rescheduleAlarm: " + nextDay);
     }
 
     public static void saveAlarm(Context context, Alarm alarm, boolean isNew) {

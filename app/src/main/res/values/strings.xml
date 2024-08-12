@@ -71,10 +71,26 @@
     <string name="label_notify_sensitivity">Notify sensitivity :</string>
     <string name="label_in_proximity">In Proximity</string>
     <string name="label_on_exact_location">On Exact Location</string>
-    <string name="label_range">Range :</string>
+    <string name="label_range">Range</string>
+    <string name="label_set_range">Set Range</string>
     <string name="label_meters">meters</string>
     <string name="hint_search">Search</string>
     <string name="label_where_to">Where to…</string>
+    <string name="label_alert_type">Alert type</string>
+    <string name="label_alarm_note">Add note</string>
+    <string name="label_alarm_note_desc">Tap here to add note</string>
+    <string name="title_select_range">Select range</string>
+    <string name="label_custom_range">Enter :</string>
+    <string-array name="range_list">
+        <item>100 m</item> <item>200 m</item> <item>500 m</item>
+        <item>1 km</item> <item>2 km</item> <item>5 km</item>
+        <item>Custom</item>
+    </string-array>
+    <string name="label_units">Unit</string>
+    <string-array name="unit_list">
+        <item>m</item> <item>km</item>
+    </string-array>
+    <string name="title_select_alert_type">Select alert type</string>
 
     <!-- Add Location Alarm - Note -->
     <string name="location_expand">Expand</string>
@@ -86,6 +102,9 @@
     <string name="location_note">Note</string>
     <string name="location_note_save">save</string>
     <string name="location_note_discard">discard</string>
+
+    <!-- LocationService -->
+    <string name="turn_off">Turn off</string>
 
     <!-- AlarmService -->
     <string name="dismiss">Dismiss</string>

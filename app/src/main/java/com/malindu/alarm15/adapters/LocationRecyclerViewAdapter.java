@@ -38,7 +38,7 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationRe
     private ArrayList<LocationAlarm> locationAlarmList;
     private Map<String, ?> allRecords;
 
-    public interface OnLocationClickListener { void onLocationClick(LocationAlarm locationAlarm); }
+    public interface OnLocationClickListener { void onLocationClick(LocationAlarm locationAlarm); void onLocationDelete(); }
     private OnLocationClickListener locationClickListener;
     public void setOnLocationClickListener(OnLocationClickListener listener) { this.locationClickListener = listener; }
 
@@ -78,9 +78,16 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LocationAlarm locationAlarm = locationAlarmList.get(position);
-        holder.locationTitle.setText(locationAlarm.getTitle());
+        holder.locationTitle.setText(locationAlarm.getTitle().replaceAll("\\R", " - "));
         holder.locationAddress.setText(locationAlarm.getAddress());
-        holder.locationRange.setText(String.format(Locale.getDefault(), "%dm", locationAlarm.getRange()));
+        float range = locationAlarm.getRange();
+        String s = "";
+        if (range >= 1000)
+            s = String.format(Locale.getDefault(), "%f", range / 1000.0).replaceAll("0*$", "").replaceAll("\\.$", "") + " km";
+        else
+            s = String.format(Locale.getDefault(), "%f", range).replaceAll("0*$", "").replaceAll("\\.$", "") + " m";
+
+        holder.locationRange.setText(s);
         holder.turnOnSwitch.setOnCheckedChangeListener(null);
         holder.turnOnSwitch.setChecked(locationAlarm.isTurnedOn());
         holder.turnOnSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -122,6 +129,7 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationRe
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 LocationUtils.deleteLocationAlarm(context, locationAlarm);
+                                if (locationClickListener != null) { locationClickListener.onLocationDelete(); }
                             }
                         })
                         .setNegativeButton(R.string.dialog_alarm_delete_cancel, new DialogInterface.OnClickListener() {
