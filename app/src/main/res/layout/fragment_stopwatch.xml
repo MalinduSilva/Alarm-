@@ -13,11 +13,62 @@
         android:textSize="40sp"
         android:layout_marginStart="10dp"/>
 
-    <Button
+    <TextView
+        android:id="@+id/tvTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_stopwatch"
-        android:id="@+id/btn"
-        android:text="Test"/>
+        android:textSize="65sp"
+        android:text="00:00:00"
+        android:layout_marginVertical="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/title_stopwatch"/>
+
+    <TextView
+        android:id="@+id/tvTimerMilli"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="45sp"
+        android:text=":00"
+        android:layout_marginVertical="40dp"
+        android:layout_toEndOf="@id/tvTimer"
+        android:layout_alignBaseline="@id/tvTimer"
+        android:layout_below="@id/title_stopwatch"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTimer"
+        android:layout_above="@id/btnStartStop"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="100dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnStartStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/icon_play_arrow" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnLap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/btnStartStop"
+        android:layout_alignBottom="@id/btnStartStop"
+        android:src="@drawable/icon_lap"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/btnStartStop"
+        android:layout_alignBottom="@id/btnStartStop"
+        android:src="@drawable/icon_reset"
+        android:visibility="gone"/>
 
 </RelativeLayout>
