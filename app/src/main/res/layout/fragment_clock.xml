@@ -15,8 +15,7 @@
         app:layout_constraintDimensionRatio="1:0.75"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="1.0"
-        android:background="@color/white">
+        app:layout_constraintWidth_percent="1.0">
 
         <com.malindu.alarm15.ui.SunPathView
             android:id="@+id/sunpath"
@@ -36,7 +35,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_moon"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clock"
@@ -133,7 +132,6 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:layout_marginTop="-10dp"
-        android:background="@color/white"
         android:src="@drawable/image_cityscape"
         app:layout_constraintTop_toBottomOf="@id/clock_layout" />
 

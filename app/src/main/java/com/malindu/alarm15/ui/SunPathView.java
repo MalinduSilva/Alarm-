@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -27,11 +28,20 @@ public class SunPathView extends View {
     private View clockUpperLayout;
     private ImageView sun, moon;
     private Slider slider;
+    private float rotation = 0;
+    private Handler handler;
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            invalidate();
+        }
+    };
 
 
     public SunPathView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         clockUpperLayout = getRootView();
+        handler = new Handler();
         //sun = clockUpperLayout.findViewById(R.id.image_sun);
         init();
     }
@@ -135,6 +145,10 @@ public class SunPathView extends View {
             alpha = 255;
         }
         int color = Color.argb((int) alpha, 0, 0, 0);
-        clockUpperLayout.setBackgroundColor(color);
+        //clockUpperLayout.setBackgroundColor(color);
+
+        sun.setRotation(rotation); moon.setRotation(rotation);
+        rotation += 1;
+        handler.postDelayed(runnable, 30);
     }
 }
